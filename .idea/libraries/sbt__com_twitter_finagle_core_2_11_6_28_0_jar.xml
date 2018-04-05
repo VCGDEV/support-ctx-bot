@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="sbt: com.twitter:finagle-core_2.11:6.28.0:jar">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.ivy2/cache/com.twitter/finagle-core_2.11/jars/finagle-core_2.11-6.28.0.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.ivy2/cache/com.twitter/finagle-core_2.11/srcs/finagle-core_2.11-6.28.0-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>
