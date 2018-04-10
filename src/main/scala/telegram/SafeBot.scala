@@ -67,8 +67,7 @@ object SafeBot extends TelegramBot with Polling with Commands {
     val uri = new URIBuilder(witUrl).addParameter("v", s"$witVersion").addParameter("q", s"$msgText")
     val response = Await.result(GET(uri.build().toURL)
       .addHeaders("Authorization" -> witToken)
-      .addHeaders("Accept" -> "application/json").apply, 5.second) //this will throw if the response doesn't return within 1 second
-    println(response.bodyString )
+      .addHeaders("Accept" -> "application/json").apply, 5.second) //this will throw if the response doesn't return within 5 second
     parse(response.bodyString).extract[WitResponse]
   }
 
