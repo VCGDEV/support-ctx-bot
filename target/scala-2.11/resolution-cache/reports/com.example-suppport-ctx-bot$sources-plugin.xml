@@ -4,10 +4,10 @@
 	<info
 		organisation="com.example"
 		module="suppport-ctx-bot$sources"
-		revision="0.1.0-SNAPSHOT"
+		revision="0.0.1-SNAPSHOT"
 		conf="plugin"
 		confs="compile, runtime, test, provided, optional, compile-internal, runtime-internal, test-internal, plugin, pom, scala-tool"
-		date="20180403162446"/>
+		date="20180410133257"/>
 	<dependencies>
 	</dependencies>
 </ivy-report>

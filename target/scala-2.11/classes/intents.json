@@ -2,18 +2,37 @@
   {
     "tag":"hello",
     "responses":["Hola {name} bienvenid@, en que puedo ayudarte?","Hola {name} que tal"]
+    "context":""
   },
   {
     "tag":"bye",
     "responses":["Muy bien, hasta luego {name}","Adios {name}, esperemos que escribas pronto","Hasta luego"]
+    "context":""
   },
   {
     "tag":"thanks",
     "responses":["Es un placer","por nada","estoy para servirte :D","un placer atenderte"]
+    "context":""
   },
   {
     "tag":"send_description",
     "responses":["Mi nombre es Luky y me pongo a tus ordenes para resolver problemas de soporte tecnico",
-    "Gracias por preguntar :D, mi nombre es Luky y tratare de resolver problemas que tengas con tus: computadoras, impresoras, correos entre otros"]
+    "Gracias por preguntar :D, mi nombre es Luky y tratare de resolver problemas que tengas con tus: computadoras, impresoras, correos entre otros"],
+    "context":""
+  },
+  {
+    "tag":"printer_error",
+    "responses":["Muy bien procederemos a verificar el error de su impresora"],
+    "context":"printer"
+  },
+  {
+    "tag":"pc_slow",
+    "responses":["En seguida verificaremos actualizaciones recientes y buscaremos virus en su computadora"],
+    "context":"pc_slow"
+  },
+  {
+    "tag":"mail_error",
+    "responses":["Muy bien, procedere a verificar su cuenta de correo"],
+    "context":"mail_error"
   }
 ]
