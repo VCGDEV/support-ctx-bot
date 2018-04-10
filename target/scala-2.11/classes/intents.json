@@ -1,17 +1,17 @@
 [
   {
     "tag":"hello",
-    "responses":["Hola {name} bienvenid@, en que puedo ayudarte?","Hola {name} que tal"]
+    "responses":["Hola {name} bienvenid@, en que puedo ayudarte?","Hola {name} que tal"],
     "context":""
   },
   {
     "tag":"bye",
-    "responses":["Muy bien, hasta luego {name}","Adios {name}, esperemos que escribas pronto","Hasta luego"]
+    "responses":["Muy bien, hasta luego {name}","Adios {name}, esperemos que escribas pronto","Hasta luego"],
     "context":""
   },
   {
     "tag":"thanks",
-    "responses":["Es un placer","por nada","estoy para servirte :D","un placer atenderte"]
+    "responses":["Es un placer","por nada","estoy para servirte :D","un placer atenderte"],
     "context":""
   },
   {
