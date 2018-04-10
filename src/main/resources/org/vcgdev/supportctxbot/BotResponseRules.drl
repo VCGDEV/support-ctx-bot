@@ -1,0 +1,9 @@
+package org.vcgdev.supportctxbot
+import java.util.List
+import kie.MessageResponse
+global List elegibleResponses
+rule "intent mail  error"
+    when $a:MessageResponse(intent=="mail_error")
+    then
+     System.out.println("Deberia everificar el tipo de error, inboxx, outbox, ambos " + $a.entities());
+     end
