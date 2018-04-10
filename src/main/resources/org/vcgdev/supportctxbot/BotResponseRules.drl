@@ -7,3 +7,8 @@ rule "intent mail  error"
     then
      System.out.println("Deberia everificar el tipo de error, inboxx, outbox, ambos " + $a.entities());
      end
+rule "intent create mail boxes"
+    when $a:MessageResponse(intent=="create_mail_boxes" && entities)
+    then
+        elegibleResponses.add("Muy bien se crearan los correos que has proporcionado");
+     end

@@ -34,5 +34,10 @@
     "tag":"mail_error",
     "responses":["Muy bien, procedere a verificar su cuenta de correo"],
     "context":"mail_error"
+  },
+  {
+    "tag":"create_mail_box",
+    "responses":["Claro, agregare un ticket para  crear las cuentas de correo"],
+    "context":"create_mail"
   }
 ]
