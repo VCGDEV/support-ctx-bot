@@ -18,8 +18,8 @@ resolvers ++= Seq(Resolver.sonatypeRepo("releases"),
 libraryDependencies += "io.megam" %% "newman" % "1.3.12"
 libraryDependencies += "com.typesafe" % "config" % "1.2.1"
 libraryDependencies += "net.liftweb" %% "lift-json" % "2.6-M4"
-libraryDependencies += "ch.qos.logback" % "logback-classic" % "1.1.3" % Runtime
-
+libraryDependencies += "ch.qos.logback" % "logback-classic" % "1.2.3" % Runtime
+libraryDependencies += "com.typesafe.scala-logging" %% "scala-logging" % "3.9.0"
 val droolsVersion = "6.0.1.Final"
 
 resolvers += "JBoss public" at "http://repository.jboss.org/nexus/content/groups/public/"

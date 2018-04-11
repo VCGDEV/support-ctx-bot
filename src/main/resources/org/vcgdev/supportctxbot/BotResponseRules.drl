@@ -2,13 +2,19 @@ package org.vcgdev.supportctxbot
 import java.util.List
 import kie.MessageResponse
 global List elegibleResponses
-rule "intent mail  error"
-    when $a:MessageResponse(intent=="mail_error")
+rule "Intent inbox error"
+    when $a:MessageResponse(intent=="mail_error" && entities().contains("mail_folder_inbox"))
     then
-     System.out.println("Deberia everificar el tipo de error, inboxx, outbox, ambos " + $a.entities());
+     System.out.println("Se trata de un error con la bandeja de entrada");
      end
-rule "intent create mail boxes"
-    when $a:MessageResponse(intent=="create_mail_boxes" && entities)
+rule "Intent outbox error"
+    when $a:MessageResponse(intent=="mail_error" && entities().contains("mail_folder_outbox"))
     then
-        elegibleResponses.add("Muy bien se crearan los correos que has proporcionado");
+        System.out.println("Se trata de un error en la bandeja de salida de los correos");
+      end
+rule "Intent mail error unknow box"
+    when $a:MessageResponse(intent=="mail_error",!entities().contains("mail_folder_outbox"),!entities().contains("mail_folder_inbox"))
+    then
+        System.out.println("No se conoce que  bandeja no funciona: inbox, outbox o ambos");
      end
+

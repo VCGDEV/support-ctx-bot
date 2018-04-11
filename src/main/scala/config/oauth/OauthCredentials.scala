@@ -1,16 +1,16 @@
 package config.oauth
 
 import com.stackmob.newman.ApacheHttpClient
-
-import scala.concurrent.duration._
-import com.stackmob.newman.dsl.POST
-import com.typesafe.config.{Config, ConfigFactory}
-import com.stackmob.newman.dsl._
+import com.stackmob.newman.dsl.{POST, _}
 import com.stackmob.newman.response.HttpResponseCode
-import org.apache.http.client.utils.URIBuilder
+import com.typesafe.config.{Config, ConfigFactory}
+import com.typesafe.scalalogging.Logger
 import net.liftweb.json._
+import org.apache.http.client.utils.URIBuilder
+import org.slf4j.LoggerFactory
 
 import scala.concurrent.Await
+import scala.concurrent.duration._
 
 class OauthCredentials(var access_token:String,var refresh_token:String,var token_type:String, var name:String) {
 
@@ -25,9 +25,10 @@ object OauthFactory{
   lazy val oauthServerUrl:String = conf.getString("application.oauth.url")
   lazy val oauthGrantType:String = conf.getString("application.oauth.grant")
   private var _credentials : OauthCredentials = null
-
+  val logger = Logger(LoggerFactory.getLogger(OauthFactory.getClass))
   def credentials():OauthCredentials = {
     if(_credentials==null){
+      logger.info("Send request to security service")
       implicit val httpClient: ApacheHttpClient = new ApacheHttpClient()
       val uri = new URIBuilder(oauthServerUrl)
         .addParameter("username",username)
@@ -39,8 +40,13 @@ object OauthFactory{
           .addHeaders("Content-Type"->"application/x-www-form-urlencoded")
         .apply,5.second)
       implicit val formats: DefaultFormats.type = net.liftweb.json.DefaultFormats
-      if(response.code==HttpResponseCode.Ok)
+      logger.debug(s"Response from URL ${uri.toString}  was: ${response.code} - content: ${response.bodyString}")
+      if(response.code==HttpResponseCode.Ok){
+        logger.info("Success login to security service");
         _credentials = parse(response.bodyString).extract[OauthCredentials]
+      }
+      else
+        logger.error("Login was not successful")
     }
     _credentials
   }

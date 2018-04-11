@@ -1,9 +1,12 @@
 
 package telegram
-import bot.{BotResponse, WitIntent, WitResponse}
+import java.util.UUID
+
+import bot.{BotResponse,WitResponse}
 import com.stackmob.newman._
 import com.stackmob.newman.dsl._
 import com.typesafe.config.{Config, ConfigFactory}
+import com.typesafe.scalalogging.Logger
 import config.oauth.OauthFactory
 
 import scala.concurrent._
@@ -15,6 +18,7 @@ import org.apache.http.client.utils.URIBuilder
 
 import scala.io.Source
 import net.liftweb.json._
+import org.slf4j.{LoggerFactory, MDC}
 
 import scala.util.Random
 
@@ -30,15 +34,17 @@ object SafeBot extends TelegramBot with Polling with Commands {
   implicit val formats: DefaultFormats.type = net.liftweb.json.DefaultFormats
   val botResponses: Array[BotResponse] = loadResponses()
   val ignoredWords:Seq[String] = Seq("/start","/credentials")
+  override val logger = Logger(LoggerFactory.getLogger(SafeBot.getClass))
   onCommand('start) { implicit msg => reply("Bienvenido, Mi nombre es Luky y soy un Bot de soporte tecnico, En que puedo ayudarte?!!!") }
   onCommand("credentials") {implicit msg=>reply(OauthFactory.name())}
   onMessage({implicit msg =>{
+    MDC.put("UUID",UUID.randomUUID().toString)
     val name = msg.from.get.firstName
     val msgText:String = msg.text.mkString
     if(null!=msg.text && !ignoredWords.contains(msgText) && !msgText.equals("")) {
-      println(s"Get intent for: $msgText")
+      logger.info(s"Get intent for: $msgText")
       val witResponse = getIntents(msgText)
-      println(witResponse)
+      logger.debug(s"$witResponse")
       val intent = witResponse.entities.get("intent")
       if(intent!=null && intent.isDefined && intent.get!=null){
         intent.get.foreach(w=>{
@@ -53,6 +59,7 @@ object SafeBot extends TelegramBot with Polling with Commands {
         })
       }else reply("Lo lamento no puedo entenderte")
     }
+    MDC.remove("UUID")
     }
   })
 
