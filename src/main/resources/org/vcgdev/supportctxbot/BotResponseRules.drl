@@ -1,5 +1,6 @@
 package org.vcgdev.supportctxbot
 import java.util.List
+import org.slf4j.Logger
 import kie.MessageResponse
 global List elegibleResponses
 rule "Intent inbox error"
