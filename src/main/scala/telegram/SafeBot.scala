@@ -4,6 +4,7 @@ import bot.{BotResponse, WitIntent, WitResponse}
 import com.stackmob.newman._
 import com.stackmob.newman.dsl._
 import com.typesafe.config.{Config, ConfigFactory}
+import config.oauth.OauthFactory
 
 import scala.concurrent._
 import scala.concurrent.duration._
@@ -28,9 +29,9 @@ object SafeBot extends TelegramBot with Polling with Commands {
   lazy val witVersion: String = conf.getString("wit.ai.version")
   implicit val formats: DefaultFormats.type = net.liftweb.json.DefaultFormats
   val botResponses: Array[BotResponse] = loadResponses()
-  val ignoredWords:Seq[String] = Seq("/start")
+  val ignoredWords:Seq[String] = Seq("/start","/credentials")
   onCommand('start) { implicit msg => reply("Bienvenido, Mi nombre es Luky y soy un Bot de soporte tecnico, En que puedo ayudarte?!!!") }
-
+  onCommand("credentials") {implicit msg=>reply(OauthFactory.name())}
   onMessage({implicit msg =>{
     val name = msg.from.get.firstName
     val msgText:String = msg.text.mkString
