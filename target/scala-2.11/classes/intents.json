@@ -16,8 +16,8 @@
   },
   {
     "tag":"send_description",
-    "responses":["Mi nombre es Luky y me pongo a tus ordenes para resolver problemas de soporte tecnico",
-    "Gracias por preguntar :D, mi nombre es Luky y tratare de resolver problemas que tengas con tus: computadoras, impresoras, correos entre otros"],
+    "responses":["Mi nombre es Luky y me pongo a tus ordenes para ayudarte a clasificar e ingresar tickets a nuestro sistema",
+    "Gracias por preguntar :D, mi nombre es Luky y tratare de clasificar los problemas que tengas e ingresarlas a nuestro sistema de tickets llamado: Asigno"],
     "context":""
   },
   {
@@ -34,5 +34,10 @@
     "tag":"mail_error",
     "responses":["Muy bien, procedere a verificar su cuenta de correo"],
     "context":"mail_error"
+  },
+  {
+    "tag":"create_mail_box",
+    "responses":["Claro, agregare un ticket para  crear las cuentas de correo"],
+    "context":"create_mail"
   }
 ]

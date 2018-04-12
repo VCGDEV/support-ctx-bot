@@ -57,7 +57,7 @@ object SafeBot extends TelegramBot with Polling with Commands {
         .mkString
     parse(jsonString).extract[Array[BotResponse]]
   }
-  
+
   def getRandomElement(list: Seq[String], random: Random): String = list(random.nextInt(list.length))
 
 }
