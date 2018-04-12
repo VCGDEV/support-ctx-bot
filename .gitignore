@@ -1,0 +1,7 @@
+#ignored files
+/target/
+/target/*
+/.idea/
+/.idea/*
+/target/scala-2.11/classes/
+/project/target/

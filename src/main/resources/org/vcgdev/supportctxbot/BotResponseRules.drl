@@ -1,0 +1,61 @@
+package org.vcgdev.supportctxbot
+import java.util.List
+import org.slf4j.Logger
+import kie.MessageResponse
+import kie.ConversationContext
+global List elegibleResponses
+global ConversationContext conversationContext
+rule "Hello intent"
+    when $a:MessageResponse(intent=="hello")
+    then
+        elegibleResponses.add("hello");
+        System.out.print("Current conversation context "+conversationContext);
+     end
+rule "Bye intent"
+    when $a:MessageResponse(intent=="bye")
+    then
+        elegibleResponses.add("bye");
+     end
+rule "Request name intent"
+    when $a:MessageResponse(intent=="send_description")
+    then
+        elegibleResponses.add("send_name");
+     end
+rule "Thanks intent"
+    when $a:MessageResponse(intent=="thanks")
+    then
+        elegibleResponses.add("thanks");
+     end
+rule "PC is slow intent"
+    when $a:MessageResponse(intent=="pc_slow")
+    then
+        elegibleResponses.add("pc_slow");
+        conversationContext.setContext("Pc is really slow");
+     end
+rule "Printer error intent"
+    when $a:MessageResponse(intent=="printer_error")
+    then
+        elegibleResponses.add("printer_error");
+     end
+rule "Create mail box intent"
+ when $a:MessageResponse(intent=="create_mail_box")
+  then
+    elegibleResponses.add("create_mail_box");
+  end
+rule "Intent inbox error"
+    when $a:MessageResponse(intent=="mail_error" && entities().contains("mail_folder_inbox"))
+    then
+        elegibleResponses.add("inbox_error");
+     end
+rule "Intent outbox error"
+    when $a:MessageResponse(intent=="mail_error" && entities().contains("mail_folder_outbox"))
+    then
+        elegibleResponses.add("mail_outbox");
+      end
+rule "Intent mail error unknow box"
+    when $a:MessageResponse(intent=="mail_error",!entities().contains("mail_folder_outbox"),!entities().contains("mail_folder_inbox"))
+    then
+        elegibleResponses.add("mail_unknow_box");
+     end
+
+
