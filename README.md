@@ -15,10 +15,10 @@ A basic BOT implementation, using:
   ##Wit configuration
   Add your own wit.ai configuration in src/main/resources/application.properties
    
-    wit.ai.token=Bearer QQUHMVCCYOX7H5WX7FXLGCA3BMPZH5CP
+    wit.ai.token=
     wit.ai.url=https://api.wit.ai/message
-    wit.ai.version=20180402
-    wit.ai.id=5a3c486f-9494-454a-ab44-0f6d7cd78304
+    wit.ai.version=
+    wit.ai.id=
   ## Security configuration
   Add your own security oauth implementation if you need access to secured API's in this case, I've an oauth2 server,
   so I've to add this configurations in src/main/resources/application.properties, if you do not need this just remove the **config.oauth.OauthCredentials** object:
