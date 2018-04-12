@@ -2,35 +2,23 @@
 package telegram
 import java.util.UUID
 
-import bot.{BotResponse,WitResponse}
-import com.stackmob.newman._
-import com.stackmob.newman.dsl._
+import bot.BotResponse
 import com.typesafe.config.{Config, ConfigFactory}
 import com.typesafe.scalalogging.Logger
 import config.oauth.OauthFactory
-
-import scala.concurrent._
-import scala.concurrent.duration._
 import info.mukel.telegrambot4s.api.declarative.Commands
 import info.mukel.telegrambot4s.api.{Polling, TelegramBot}
 import kie.{BotResponseEngine, MessageResponse}
-import org.apache.http.client.utils.URIBuilder
-
 import scala.io.Source
 import net.liftweb.json._
 import org.slf4j.{LoggerFactory, MDC}
-
+import wit.WitAiProcessor
 import scala.util.Random
-
 object SafeBot extends TelegramBot with Polling with Commands {
 
   val conf: Config = ConfigFactory.load
   lazy val token: String = scala.util.Properties.envOrNone("BOT_TOKEN")
     .getOrElse(Source.fromInputStream(getClass.getResourceAsStream("/bot.token")).getLines().mkString)
-  lazy val witToken: String = conf.getString("wit.ai.token")
-  lazy val witId: String = conf.getString("wit.ai.id")
-  lazy val witUrl: String = conf.getString("wit.ai.url")
-  lazy val witVersion: String = conf.getString("wit.ai.version")
   implicit val formats: DefaultFormats.type = net.liftweb.json.DefaultFormats
   val botResponses: Array[BotResponse] = loadResponses()
   val ignoredWords:Seq[String] = Seq("/start","/credentials")
@@ -43,12 +31,12 @@ object SafeBot extends TelegramBot with Polling with Commands {
     val msgText:String = msg.text.mkString
     if(null!=msg.text && !ignoredWords.contains(msgText) && !msgText.equals("")) {
       logger.info(s"Get intent for: $msgText")
-      val witResponse = getIntents(msgText)
+      val witResponse = WitAiProcessor.getIntents(msgText)
       logger.debug(s"$witResponse")
       val intent = witResponse.entities.get("intent")
       if(intent!=null && intent.isDefined && intent.get!=null){
         intent.get.foreach(w=>{
-          BotResponseEngine.determineBotResponse(MessageResponse(w.value, witResponse.entities.filterKeys(!_.equals("intent"))))
+          BotResponseEngine.determineBotResponse(MessageResponse(w.value, witResponse.entities.filterKeys(!_.equals("intent"))),msg.chat.id.toString)
           val answers = botResponses.filter(p=>p.tag==w.value)
           if(answers.length>0){
             val message:String = getRandomElement(answers(0).responses, new Random(System.currentTimeMillis())).replace("{name}",name)
@@ -69,16 +57,7 @@ object SafeBot extends TelegramBot with Polling with Commands {
         .mkString
     parse(jsonString).extract[Array[BotResponse]]
   }
-
-  def getIntents(msgText:String): WitResponse ={
-    implicit val httpClient: ApacheHttpClient = new ApacheHttpClient()
-    val uri = new URIBuilder(witUrl).addParameter("v", s"$witVersion").addParameter("q", s"$msgText")
-    val response = Await.result(GET(uri.build().toURL)
-      .addHeaders("Authorization" -> witToken)
-      .addHeaders("Accept" -> "application/json").apply, 5.second) //this will throw if the response doesn't return within 5 second
-    parse(response.bodyString).extract[WitResponse]
-  }
-
+  
   def getRandomElement(list: Seq[String], random: Random): String = list(random.nextInt(list.length))
 
 }

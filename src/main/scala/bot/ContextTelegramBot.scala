@@ -9,7 +9,7 @@ object ContextTelegramBot extends AppStart with App {
   val logger = Logger(LoggerFactory.getLogger(ContextTelegramBot.getClass))
   logger.info(start_msg)
   OauthFactory.credentials()
-  SafeBot.run();
+  SafeBot.run()
 }
 
 trait AppStart {

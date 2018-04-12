@@ -1,5 +1,6 @@
 package kie
-import bot.WitIntent
+import wit.WitIntent
+
 import scala.beans.BeanInfo
 sealed trait BotFact
 class BotFacts {
