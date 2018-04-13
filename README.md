@@ -3,7 +3,8 @@ A basic BOT implementation, using:
 
   - Telegram API [https://github.com/mukel/telegrambot4s](https://github.com/mukel/telegrambot4s)
   - [Wit.Ai](https://wit.ai)
-  - Drools rules engine [http://bleibinha.us/blog/2014/04/drools-with-scala](http://bleibinha.us/blog/2014/04/drools-with-scala) 
+  - Drools rules engine [http://bleibinha.us/blog/2014/04/drools-with-scala](http://bleibinha.us/blog/2014/04/drools-with-scala)
+  - Google Speech recognition [https://cloud.google.com/speech-to-text](https://cloud.google.com/speech-to-text/)
 
 #Configurations
   ##Telegram configuration
@@ -30,3 +31,8 @@ A basic BOT implementation, using:
     application.oauth.client-secret=
     application.oauth.url=
     application.rest.base.url=
+    
+  ## Google api speech recognition
+  Add your own configuration for the google speech recognition API - **speech to text**
+  
+      application.google.token=  

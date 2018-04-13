@@ -8,7 +8,7 @@ import telegram.SafeBot
 object ContextTelegramBot extends AppStart with App {
   val logger = Logger(LoggerFactory.getLogger(ContextTelegramBot.getClass))
   logger.info(start_msg)
-  OauthFactory.credentials()
+  //OauthFactory.credentials()
   SafeBot.run()
 }
 
