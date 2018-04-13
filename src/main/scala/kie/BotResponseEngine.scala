@@ -8,7 +8,7 @@ import org.slf4j.LoggerFactory
 
 object BotResponseEngine {
   val logger = Logger(LoggerFactory.getLogger(BotResponseEngine.getClass))
-  def determineBotResponse(process:MessageResponse,sessionId:String): List[String] = {
+  def determineBotResponse(process:MessageResponse,sessionId:Long): List[String] = {
     logger.info(s"Create session for chat: $sessionId")
     val session = Kie.newStatelessSession
     val conversationContext = new ConversationContext("")
