@@ -8,8 +8,6 @@ import config.oauth.OauthFactory
 import info.mukel.telegrambot4s.api.declarative.Commands
 import info.mukel.telegrambot4s.api.{Polling, TelegramBot}
 import info.mukel.telegrambot4s.methods.GetFile
-import kie.{BotResponseEngine, MessageResponse}
-
 import scala.io.Source
 import org.slf4j.{LoggerFactory, MDC}
 import wit.WitAiProcessor
@@ -25,25 +23,45 @@ import google.GoogleSpeechRecognition
 
 import scala.concurrent.Future
 import scala.util.Random
+
+/**
+  * @author Victor de la Cruz Gonzalez
+  * @version 1.0.0
+  * Object definition to process incoming messages from telegram bot,
+  *  for full documentation go to: <strong>https://github.com/mukel/telegrambot4s<strong>
+  * */
 object SafeBot extends TelegramBot with Polling with Commands {
 
+  //load bot configuration for telegram
   val conf: Config = ConfigFactory.load
   lazy val token: String = scala.util.Properties.envOrNone("BOT_TOKEN")
     .getOrElse(Source.fromInputStream(getClass.getResourceAsStream("/bot.token")).getLines().mkString)
   implicit val formats: DefaultFormats.type = net.liftweb.json.DefaultFormats
   val botResponses: Array[BotResponse] = loadResponses()
-  val googleKey:String = ""
   val ignoredWords:Seq[String] = Seq("/start","/credentials")
   override val logger = Logger(LoggerFactory.getLogger(SafeBot.getClass))
+
+  /**
+    * Process <strong>/start</strong> command from telegram
+    * */
   onCommand('start) { implicit msg => reply("Bienvenido, Mi nombre es Luky y soy un Bot de soporte tecnico, En que puedo ayudarte?!!!") }
+
+  /**
+    * Process <strong>/credentials</strong> command from telegram
+    * */
   onCommand("credentials") {implicit msg=>reply(OauthFactory.name())}
+
+
+  /**
+    * Process incoming messages from telegram
+    * */
   onMessage({implicit msg =>{
     MDC.put("UUID",UUID.randomUUID().toString)
     val name = msg.from.get.firstName
     msg.voice match {
       case Some(voice) =>
           logger.info(s"Download Telegram voice record ${voice.fileId}")
-        downloadAudio(voice.fileId).onComplete{
+        downloadFile(voice.fileId).onComplete{
           case Success(bytes)=>
             reply(getUserIntent(GoogleSpeechRecognition.recognizeSpeech(bytes),msg.chat.id,name))
           case Failure(t)=>logger.error(s"Error trying to download audio from telegram ${t}")
@@ -58,6 +76,12 @@ object SafeBot extends TelegramBot with Polling with Commands {
     }
   })
 
+  /**
+    *  Determine user intent and get the correct response
+    *  @param chatId unique chat ID from telegram
+    *  @param msgText the message to process using an NLP to determine the intent
+    *  @return Message to send as response to user
+    * */
   def getUserIntent(msgText:String,chatId:Long,name:String): String ={
     logger.info(s"Get user intent ${msgText}")
     var reply:String = ""
@@ -83,6 +107,10 @@ object SafeBot extends TelegramBot with Polling with Commands {
     reply
   }
 
+  /***
+    *  Load default responses from <strong>/intents.json</strong> file
+    *  @return array with BotResponse objects
+    */
   def loadResponses():Array[BotResponse] = {
     val stream = getClass.getResourceAsStream("/intents.json")
     val jsonString:String = Source.fromInputStream(stream).getLines
@@ -90,7 +118,12 @@ object SafeBot extends TelegramBot with Polling with Commands {
     parse(jsonString).extract[Array[BotResponse]]
   }
 
-  def downloadAudio(fileId:String): Future[ByteString] ={
+  /**
+    * Download file from telegram using the file ID
+    * @param fileId the file to be downloaded
+    * @return Future[ByteString] of the file
+    * */
+  def downloadFile(fileId:String): Future[ByteString] ={
     return request(GetFile(fileId)).flatMap(s=>
       s.filePath match {
         case Some(filePath) =>
@@ -105,5 +138,11 @@ object SafeBot extends TelegramBot with Polling with Commands {
     )
   }
 
+  /**
+    * Take a random element from possible responses array
+    *  @param list a sequence of posible arrays
+    *  @param random Random object with configurations to obtain next position of array
+    *  @return message response
+    * */
   def getRandomElement(list: Seq[String], random: Random): String = list(random.nextInt(list.length))
 }

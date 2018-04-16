@@ -14,13 +14,25 @@ import org.slf4j.LoggerFactory
 
 import scala.concurrent.Await
 import scala.concurrent.duration._
+/**
+  * @author Victor de la Cruz
+  * @version 1.0.0
+  * Class to send audio to google and transcript to text
+* */
 object GoogleSpeechRecognition {
   //load configuration from application.properties in src/main/resources
   val conf: Config = ConfigFactory.load
+  //api key for google requests
   lazy val googleApiKey:String = conf.getString("application.google.token")
   val logger = Logger(LoggerFactory.getLogger(GoogleSpeechRecognition.getClass))
   implicit val formats: DefaultFormats.type = net.liftweb.json.DefaultFormats
 
+  /**
+    * Method to send request at <strong>https://speech.googleapis.com/v1/speech</strong>
+    *  and transcript audio in ByteString from telegram
+    *  @param file the ByteString representation of an audio
+    *  @return text from audio
+    **/
   def recognizeSpeech(file:ByteString): String ={
     logger.info("Send request to google and recognize speech to text")
     val url:String = s"https://speech.googleapis.com/v1/speech:recognize?alt=json&key=$googleApiKey"

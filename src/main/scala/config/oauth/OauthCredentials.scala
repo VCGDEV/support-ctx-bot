@@ -12,11 +12,22 @@ import org.slf4j.LoggerFactory
 import scala.concurrent.Await
 import scala.concurrent.duration._
 
+/**
+  * @author Victor de la Cruz
+  * @version 1.0.0
+  * Class to maintain in memory user details from oauth login
+  * */
 class OauthCredentials(var access_token:String,var refresh_token:String,var token_type:String, var name:String) {
 
 }
 
+/**
+  *  @author Victor de la Cruz
+  *  @version 1.0.0
+  *  Object definition to send request at security microservice and make login, using oauth server
+  * */
 object OauthFactory{
+  //security microservice configurations
   val conf: Config = ConfigFactory.load
   lazy val username:String = conf.getString("application.username")
   lazy val password:String = conf.getString("application.password")
@@ -26,6 +37,11 @@ object OauthFactory{
   lazy val oauthGrantType:String = conf.getString("application.oauth.grant")
   private var _credentials : OauthCredentials = null
   val logger = Logger(LoggerFactory.getLogger(OauthFactory.getClass))
+
+  /**
+    * Method to send a request to <strong>security</strong> microservice and login into app
+    * @return OauthCredentials from server response
+    * */
   def credentials():OauthCredentials = {
     if(_credentials==null){
       logger.info("Send request to security service")
@@ -42,7 +58,7 @@ object OauthFactory{
       implicit val formats: DefaultFormats.type = net.liftweb.json.DefaultFormats
       logger.debug(s"Response from URL ${uri.toString}  was: ${response.code} - content: ${response.bodyString}")
       if(response.code==HttpResponseCode.Ok){
-        logger.info("Success login to security service");
+        logger.info("Success login to security service")
         _credentials = parse(response.bodyString).extract[OauthCredentials]
       }
       else
