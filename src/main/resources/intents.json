@@ -19,25 +19,144 @@
     "responses":["Mi nombre es Luky y me pongo a tus ordenes para ayudarte a clasificar e ingresar tickets a nuestro sistema",
     "Gracias por preguntar :D, mi nombre es Luky y tratare de clasificar los problemas que tengas e ingresarlas a nuestro sistema de tickets llamado: Asigno"],
     "context":""
+  },{
+  "tag":"network_vpn",
+  "responses":["Main class: Redes - Subcategory: VPN"],
+  "context":"network"
+},
+  {
+    "tag":"mail_training",
+    "responses":["Main class: Correo - Subcategory: Entranamiento"],
+    "context":"mail"
   },
   {
-    "tag":"printer_error",
-    "responses":["Muy bien procederemos a verificar el error de su impresora"],
+    "tag":"network_configuration",
+    "responses":["Main class: Redes - Subcategory: Configuracion"],
+    "context":"network"
+  },
+  {
+    "tag":"network_internet",
+    "responses":["Main class: Redes - Subcategory: Internet"],
+    "context":"network"
+  },
+  {
+    "tag":"network_wireles",
+    "responses":["Main class: Redes - Subcategory: Wireles"],
+    "context":"network"
+  },
+  {
+    "tag":"mail_delete_account",
+    "responses":["Main class: Correo - Subcategory: Eliminar cuentas"],
+    "context":"mail"
+  },
+  {
+    "tag":"mail_configuration",
+    "responses":["Main class: Correo - Subcategory: Configuracion"],
+    "context":"mail"
+  },
+  {
+    "tag":"mail_create_account",
+    "responses":["Main class: Correo - Subcategory: Crear cuenta"],
+    "context":"mail"
+  },
+  {
+    "tag":"network_structured_cabling",
+    "responses":["Main class: Redes - Subcategory: Cableado estructurado"],
+    "context":"network"
+  },
+  {
+    "tag":"mail_password_change",
+    "responses":["Main class: Correo - Subcategory: Cambiar password"],
+    "context":"Mail"
+  },
+  {
+    "tag":"special_activity_inventory",
+    "responses":["Main class: Actividad Especial - Subcategory: Inventarios"],
+    "context":"inventory"
+  },
+  {
+    "tag":"special_activity_preventive_maintenance",
+    "responses":["Main class: Actividad Especial - Subcategory: Mantenimiento preventivo"],
+    "context":"preventive_maintenance"
+  },
+  {
+    "tag":"special_activity_reinstall",
+    "responses":["Main class: Actividad Especial - Subcategory: Reinstalar equipo"],
+    "context":"reinstall"
+  },
+  {
+    "tag":"special_activity_change_equipment",
+    "responses":["Main class: Actividad Especial - Subcategory: Cambio de equipo"],
+    "context":"new_equipment"
+  },
+  {
+    "tag":"special_activity_quote",
+    "responses":["Main class: Actividad especial - Subcategory: Cotizacion"],
+    "context":"quote"
+  },
+  {
+    "tag":"special_activity_guarantee",
+    "responses":["Main class: Actividad especial - Subcategory: Garantia"],
+    "context":"guarantee"
+  },
+  {
+    "tag":"special_activity_install_equipment",
+    "responses":["Main class: Actividad especial - Subcategory: Instalar equipo"],
+    "context":"install_equipment"
+  },
+  {
+    "tag":"pc_officce",
+    "responses":["Main class PC's - Subcategory: Office"],
+    "context":"office"
+  },
+  {
+    "tag":"pc_os",
+    "responses":["Main class: PC's - Subcategory - Sistema Operativo"],
+    "context":"operating_system"
+  },
+  {
+    "tag":"pc_antivirus",
+    "responses":["Main class: PC's - Subcategory - Antivirus"],
+    "context":"antivirus"
+  },
+  {
+    "tag":"pc_hardware",
+    "responses":["Main class: PC's - Subcategory - Hardware"],
+    "context":"antivirus"
+  },
+  {
+    "tag":"pc_printers",
+    "responses":["Main class: PC's - Subcategory - Impresoras"],
     "context":"printer"
   },
   {
-    "tag":"pc_slow",
-    "responses":["En seguida verificaremos actualizaciones recientes y buscaremos virus en su computadora"],
-    "context":"pc_slow"
+    "tag":"pc_software",
+    "responses":["Main class: PC's - Subcategory - Software"],
+    "context":"sftware"
   },
   {
-    "tag":"mail_error",
-    "responses":["Muy bien, procedere a verificar su cuenta de correo"],
-    "context":"mail_error"
+    "tag":"servers_data_base",
+    "responses":["Main class: Servidores - Subcategory: Base de Datos"],
+    "context":"database"
   },
   {
-    "tag":"create_mail_box",
-    "responses":["Claro, agregare un ticket para  crear las cuentas de correo"],
-    "context":"create_mail"
+    "tag":"servers_hardware",
+    "responses":["Main class: Servidores - Subcategory: Hardware"],
+    "context":"servers"
+  },
+  {
+    "tag":"server_os",
+    "responses":["Main class: Servidores - Subcategory: Sistema operativo"],
+    "context":"servers_os"
+  },
+  {
+    "tag":"servers_software",
+    "responses":["Main class: Servidores - Subcategory: Software"],
+    "context":"servers_software"
+  },
+  {
+    "tag":"applications_documents_control",
+    "responses":["Main class: Aplicaciones - Subcategory: Control de documentos"],
+    "context":"servers_software"
   }
 ]

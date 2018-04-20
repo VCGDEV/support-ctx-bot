@@ -8,7 +8,7 @@ class BotFacts {
 }
 
 /**
-  * @author Vitor de la Cruz
+  * @author Victor de la Cruz
   * @version 1.0.0
   * Class definition to manage intent and the entities to process in rule engine
   * */

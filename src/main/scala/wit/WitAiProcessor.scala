@@ -39,6 +39,7 @@ object WitAiProcessor {
     val response = Await.result(GET(uri.build().toURL)
       .addHeaders("Authorization" -> witToken)
       .addHeaders("Accept" -> "application/json").apply, 5.second) //this will throw if the response doesn't return within 5 second
+    //System.out.println(response.bodyString);
     parse(response.bodyString).extract[WitResponse]
   }
 }

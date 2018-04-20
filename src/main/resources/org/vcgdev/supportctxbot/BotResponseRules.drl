@@ -30,7 +30,7 @@ rule "PC is slow intent"
     when $a:MessageResponse(intent=="pc_slow")
     then
         elegibleResponses.add("pc_slow");
-        conversationContext.setContext("Pc is really slow");
+        //conversationContext.setContext("Pc is really slow");
      end
 rule "Printer error intent"
     when $a:MessageResponse(intent=="printer_error")
@@ -38,10 +38,19 @@ rule "Printer error intent"
         elegibleResponses.add("printer_error");
      end
 rule "Create mail box intent"
- when $a:MessageResponse(intent=="create_mail_box")
+ when $a:MessageResponse(intent=="mail_create_account")
+      $b:ConversationContext(context=="")
   then
-    elegibleResponses.add("create_mail_box");
-  end
+    elegibleResponses.add("mail_create_account");
+    modify($b){setContext("require_mails")};
+    System.out.println("Set context to require_mails "+$b);
+  end//en esta regla ver si vienen los correos a crear, si no mandar un mensaje -->
+rule "Detect mails to create"
+when $a:ConversationContext(context=="require_mails")
+    $b:MessageResponse(entities().contains("email"))
+then
+ elegibleResponses.add("We now know emails to create");
+ end
 rule "Intent inbox error"
     when $a:MessageResponse(intent=="mail_error" && entities().contains("mail_folder_inbox"))
     then

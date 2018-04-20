@@ -18,19 +18,22 @@ object BotResponseEngine {
     *  @param process the response to process in the rules
     *  @param sessionId chat Id from telegram
     * */
+  val session = Kie.newSession//TODO mantener estado
+  var conversationContext = new ConversationContext("")
+  session.setGlobal("conversationContext",conversationContext)
   def determineBotResponse(process:MessageResponse,sessionId:Long): List[String] = {
     logger.info(s"Create session for chat: $sessionId")
-    val session = Kie.newStatelessSession
-    val conversationContext = new ConversationContext("")
     val elegibleResponses = new util.ArrayList[String]()
+    //logger.info(s"The session id is: ${session.getId}")
     session.setGlobal("elegibleResponses",elegibleResponses)
     session.setGlobal("conversationContext",conversationContext)
-    //session.insert(process)
+    session.insert(process)
+    session.insert(conversationContext)
     session.addEventListener(new CustomAgendaEventListener())
-    //session.fireAllRules()
+    session.fireAllRules()
     //session.dispose()
-    session.execute(process)
-    logger.info(s"Kie session result $elegibleResponses context ${conversationContext.context}")
+    //session.execute(process)
+    logger.info(s"Kie session result $elegibleResponses context ${conversationContext}")
     elegibleResponses.toArray.toList.map(s=>s.toString)
   }
 }

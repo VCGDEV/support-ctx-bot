@@ -1,27 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
+    <list id="464acf96-d2bd-4797-8fe2-b9b41d8616d9" name="** add .gitignore" comment="** add .gitignore --" />
     <list default="true" id="79f9c19b-db37-48a6-847f-9885779e3909" name="Default" comment="** remove to println">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/application.properties" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/resources/bot.token" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/bot.token" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/scala/bot/BotResponse.scala" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/scala/bot/BotResponse.scala" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/scala/bot/ContextTelegramBot.scala" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/scala/bot/ContextTelegramBot.scala" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/scala/config/logger/CustomAgendaEventListener.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/scala/config/logger/CustomAgendaEventListener.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/scala/config/oauth/OauthCredentials.scala" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/scala/config/oauth/OauthCredentials.scala" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/scala/google/GoogleSpeechRecognition.scala" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/scala/google/GoogleSpeechRecognition.scala" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/scala/google/GoogleSpeechResult.scala" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/scala/google/GoogleSpeechResult.scala" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/scala/google/GoogleSpeechValue.scala" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/scala/google/GoogleSpeechValue.scala" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/scala/google/RecognitionAudio.scala" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/scala/google/RecognitionAudio.scala" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/scala/google/RecognitionConfig.scala" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/scala/google/RecognitionConfig.scala" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/scala/google/RecognitionRequest.scala" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/scala/google/RecognitionRequest.scala" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/intents.json" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/intents.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/org/vcgdev/supportctxbot/BotResponseRules.drl" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/org/vcgdev/supportctxbot/BotResponseRules.drl" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/scala/kie/BotFacts.scala" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/scala/kie/BotFacts.scala" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/scala/kie/BotResponseEngine.scala" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/scala/kie/BotResponseEngine.scala" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/scala/kie/ConversationContext.scala" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/scala/kie/ConversationContext.scala" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/scala/kie/Kie.scala" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/scala/kie/Kie.scala" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/scala/telegram/SafeBot.scala" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/scala/telegram/SafeBot.scala" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/scala/wit/WitAiProcessor.scala" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/scala/wit/WitAiProcessor.scala" afterDir="false" />
     </list>
-    <list id="464acf96-d2bd-4797-8fe2-b9b41d8616d9" name="** add .gitignore" comment="** add .gitignore --" />
     <ignored path="$PROJECT_DIR$/target/" />
     <ignored path="$PROJECT_DIR$/project/project/target/" />
     <ignored path="$PROJECT_DIR$/project/target/" />
@@ -46,68 +39,53 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="WitAiProcessor.scala" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/scala/wit/WitAiProcessor.scala">
+      <file leaf-file-name="BotResponseRules.drl" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/main/resources/org/vcgdev/supportctxbot/BotResponseRules.drl">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="615">
-              <caret line="41" column="4" selection-start-line="41" selection-start-column="4" selection-end-line="41" selection-end-column="51" />
-              <folding>
-                <element signature="e#12#55#0" expanded="true" />
-              </folding>
+            <state relative-caret-position="420">
+              <caret line="28" column="24" selection-start-line="28" selection-start-column="24" selection-end-line="28" selection-end-column="24" />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="WitIntent.scala" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/scala/wit/WitIntent.scala">
+      <file leaf-file-name="intents.json" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/src/main/resources/intents.json">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="150">
-              <caret line="10" column="57" selection-start-line="10" selection-start-column="57" selection-end-line="10" selection-end-column="57" />
+            <state relative-caret-position="127">
+              <caret line="156" column="3" lean-forward="true" selection-start-line="156" selection-start-column="3" selection-end-line="156" selection-end-column="3" />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="SafeBot.scala" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/src/main/scala/telegram/SafeBot.scala">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="790">
-              <caret line="144" column="31" selection-start-line="144" selection-start-column="31" selection-end-line="144" selection-end-column="31" />
-              <folding>
-                <element signature="e#18#39#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="WitResponse.scala" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/scala/wit/WitResponse.scala">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="75">
-              <caret line="5" column="24" selection-start-line="5" selection-start-column="16" selection-end-line="5" selection-end-column="24" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="BotFacts.scala" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/scala/kie/BotFacts.scala">
+      <file leaf-file-name="ContextTelegramBot.scala" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/main/scala/bot/ContextTelegramBot.scala">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="165">
-              <caret line="11" column="18" selection-start-line="11" selection-start-column="18" selection-end-line="11" selection-end-column="18" />
+              <caret line="14" column="22" selection-start-line="14" selection-start-column="22" selection-end-line="14" selection-end-column="22" />
               <folding>
-                <element signature="e#12#32#0" expanded="true" />
+                <element signature="e#12#51#0" expanded="true" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="BotResponseEngine.scala" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/scala/kie/BotResponseEngine.scala">
+      <file leaf-file-name="OauthCredentials.scala" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/main/scala/config/oauth/OauthCredentials.scala">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="240">
-              <caret line="16" column="40" selection-start-line="16" selection-start-column="40" selection-end-line="16" selection-end-column="40" />
+            <state relative-caret-position="870">
+              <caret line="68" selection-start-line="68" selection-end-line="68" />
               <folding>
-                <element signature="e#13#29#0" expanded="true" />
+                <element signature="e#22#65#0" expanded="true" />
               </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="SafeBot.scala" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/main/scala/telegram/SafeBot.scala">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="735">
+              <caret line="73" column="59" selection-start-line="73" selection-start-column="59" selection-end-line="73" selection-end-column="59" />
             </state>
           </provider>
         </entry>
@@ -126,6 +104,7 @@
       <find>tele</find>
       <find>getFile</find>
       <find>reply</find>
+      <find>creat</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -148,23 +127,18 @@
         <option value="$PROJECT_DIR$/src/main/resources/META-INF/maven/pom.properties" />
         <option value="$PROJECT_DIR$/src/main/resources/org/vcgdev/support-ctx-bot/BotResponseRules.drl" />
         <option value="$PROJECT_DIR$/src/main/scala/config/oauth/OauthSecurityProvider.scala" />
-        <option value="$PROJECT_DIR$/src/main/resources/intents.json" />
         <option value="$PROJECT_DIR$/src/main/scala/bot/WitIntent.scala" />
         <option value="$PROJECT_DIR$/build.sbt" />
         <option value="$PROJECT_DIR$/src/main/scala/config/OauthCredentials.scala" />
         <option value="$PROJECT_DIR$/src/main/scala/config/logger/CorrelationId.scala" />
         <option value="$PROJECT_DIR$/src/main/resources/logback.xml" />
         <option value="$PROJECT_DIR$/src/main/scala/config/logger/CustomAgendaEventListener.scala" />
-        <option value="$PROJECT_DIR$/src/main/resources/org/vcgdev/supportctxbot/BotResponseRules.drl" />
         <option value="$PROJECT_DIR$/src/main/scala/WitAiProcessor.scala" />
-        <option value="$PROJECT_DIR$/src/main/scala/wit/WitAiProcessor.scala" />
         <option value="$PROJECT_DIR$/src/main/scala/wit/WitResponse.scala" />
         <option value="$PROJECT_DIR$/src/main/scala/wit/WitIntent.scala" />
         <option value="$PROJECT_DIR$/.gitignore" />
-        <option value="$PROJECT_DIR$/src/main/resources/application.properties" />
         <option value="$PROJECT_DIR$/README.md" />
         <option value="$PROJECT_DIR$/src/main/scala/google/GoogleSpeechRecognition.scala" />
-        <option value="$PROJECT_DIR$/src/main/scala/bot/ContextTelegramBot.scala" />
         <option value="$PROJECT_DIR$/src/main/scala/bot/BotResponse.scala" />
         <option value="$PROJECT_DIR$/src/main/scala/config/logger/CustomAgendaEventListener.java" />
         <option value="$PROJECT_DIR$/src/main/scala/config/oauth/OauthCredentials.scala" />
@@ -173,11 +147,16 @@
         <option value="$PROJECT_DIR$/src/main/scala/google/RecognitionRequest.scala" />
         <option value="$PROJECT_DIR$/src/main/scala/google/RecognitionAudio.scala" />
         <option value="$PROJECT_DIR$/src/main/scala/google/RecognitionConfig.scala" />
-        <option value="$PROJECT_DIR$/src/main/scala/kie/Kie.scala" />
         <option value="$PROJECT_DIR$/src/main/scala/kie/BotFacts.scala" />
+        <option value="$PROJECT_DIR$/src/main/resources/application.properties" />
+        <option value="$PROJECT_DIR$/src/main/scala/wit/WitAiProcessor.scala" />
         <option value="$PROJECT_DIR$/src/main/scala/kie/ConversationContext.scala" />
+        <option value="$PROJECT_DIR$/src/main/scala/kie/Kie.scala" />
         <option value="$PROJECT_DIR$/src/main/scala/kie/BotResponseEngine.scala" />
+        <option value="$PROJECT_DIR$/src/main/resources/org/vcgdev/supportctxbot/BotResponseRules.drl" />
+        <option value="$PROJECT_DIR$/src/main/scala/bot/ContextTelegramBot.scala" />
         <option value="$PROJECT_DIR$/src/main/scala/telegram/SafeBot.scala" />
+        <option value="$PROJECT_DIR$/src/main/resources/intents.json" />
       </list>
     </option>
   </component>
@@ -187,9 +166,10 @@
     <detection-done>true</detection-done>
     <sorting>DEFINITION_ORDER</sorting>
   </component>
-  <component name="ProjectFrameBounds" extendedState="6">
-    <option name="width" value="1920" />
-    <option name="height" value="1080" />
+  <component name="ProjectFrameBounds">
+    <option name="x" value="2" />
+    <option name="width" value="1268" />
+    <option name="height" value="689" />
   </component>
   <component name="ProjectLevelVcsManager" settingsEditedManually="true">
     <ConfirmationsSetting value="1" id="Add" />
@@ -200,6 +180,7 @@
     </navigator>
     <panes>
       <pane id="PackagesPane" />
+      <pane id="Scope" />
       <pane id="AndroidView" />
       <pane id="ProjectPane">
         <subPane>
@@ -224,6 +205,21 @@
               <item name="support-ctx-bot" type="462c0819:PsiDirectoryNode" />
               <item name="src" type="462c0819:PsiDirectoryNode" />
               <item name="main" type="462c0819:PsiDirectoryNode" />
+              <item name="resources" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="suppport-ctx-bot" type="b2602c69:ProjectViewProjectNode" />
+              <item name="support-ctx-bot" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="main" type="462c0819:PsiDirectoryNode" />
+              <item name="resources" type="462c0819:PsiDirectoryNode" />
+              <item name="META-INF" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="suppport-ctx-bot" type="b2602c69:ProjectViewProjectNode" />
+              <item name="support-ctx-bot" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="main" type="462c0819:PsiDirectoryNode" />
               <item name="scala" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
@@ -232,19 +228,27 @@
               <item name="src" type="462c0819:PsiDirectoryNode" />
               <item name="main" type="462c0819:PsiDirectoryNode" />
               <item name="scala" type="462c0819:PsiDirectoryNode" />
-              <item name="telegram" type="462c0819:PsiDirectoryNode" />
+              <item name="bot" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="suppport-ctx-bot" type="b2602c69:ProjectViewProjectNode" />
+              <item name="support-ctx-bot" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="main" type="462c0819:PsiDirectoryNode" />
+              <item name="scala" type="462c0819:PsiDirectoryNode" />
+              <item name="kie" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
           <select />
         </subPane>
       </pane>
-      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
+    <property name="SearchEverywhereHistoryKey" value="&#9;FILE&#9;file:///home/vcruz/git/support-ctx-bot/src/main/resources/org/vcgdev/supportctxbot/BotResponseRules.drl" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="aspect.path.notification.shown" value="true" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/../amentum-luky" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/../mobile-driver-app" />
     <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
     <property name="project.structure.last.edited" value="Project" />
     <property name="project.structure.proportion" value="0.0" />
@@ -401,7 +405,13 @@
       <workItem from="1523456581133" duration="22242000" />
       <workItem from="1523542174617" duration="18267000" />
       <workItem from="1523629241415" duration="19862000" />
-      <workItem from="1523888133154" duration="4308000" />
+      <workItem from="1523888133154" duration="7825000" />
+      <workItem from="1523899419691" duration="3092000" />
+      <workItem from="1523974450711" duration="8766000" />
+      <workItem from="1524062565958" duration="14004000" />
+      <workItem from="1524147605207" duration="25734000" />
+      <workItem from="1524238187303" duration="6303000" />
+      <workItem from="1524264481600" duration="1186000" />
     </task>
     <task id="LOCAL-00001" summary="** add new tags, add drools for rule engine, add basic rule example">
       <created>1523398775417</created>
@@ -522,40 +532,47 @@
       <option name="project" value="LOCAL" />
       <updated>1523655162889</updated>
     </task>
-    <option name="localTasksCounter" value="18" />
+    <task id="LOCAL-00018" summary="** add comments to files and describe functionality">
+      <created>1523892503047</created>
+      <option name="number" value="00018" />
+      <option name="presentableId" value="LOCAL-00018" />
+      <option name="project" value="LOCAL" />
+      <updated>1523892503047</updated>
+    </task>
+    <option name="localTasksCounter" value="19" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="107471000" />
+    <option name="totallyTimeSpent" value="170073000" />
   </component>
   <component name="ToolWindowManager">
-    <frame x="0" y="0" width="1920" height="1080" extended-state="6" />
+    <frame x="2" y="0" width="1268" height="689" extended-state="0" />
     <editor active="true" />
     <layout>
       <window_info anchor="right" id="Palette" order="3" />
       <window_info anchor="bottom" id="TODO" order="6" />
+      <window_info anchor="bottom" id="Messages" order="7" sideWeight="0.4984375" weight="0.32730016" />
       <window_info anchor="right" id="sbt" order="4" />
       <window_info anchor="right" id="Palette&#9;" order="3" />
       <window_info id="Image Layers" order="2" />
       <window_info anchor="right" id="Capture Analysis" order="3" />
-      <window_info anchor="bottom" id="Event Log" order="7" sideWeight="0.50416666" side_tool="true" weight="0.15179487" />
+      <window_info anchor="bottom" id="Event Log" order="7" sideWeight="0.5053235" side_tool="true" weight="0.17123288" />
       <window_info anchor="right" id="Maven Projects" order="3" />
       <window_info anchor="bottom" id="Database Changes" order="8" show_stripe_button="false" />
+      <window_info active="true" anchor="bottom" id="Run" order="2" sideWeight="0.4946765" visible="true" weight="0.5188356" />
       <window_info anchor="bottom" id="Version Control" order="7" weight="0.32923076" />
-      <window_info anchor="bottom" id="Run" order="2" sideWeight="0.49583334" weight="0.15179487" />
-      <window_info anchor="bottom" id="Terminal" order="7" weight="0.32615384" />
+      <window_info anchor="bottom" id="Terminal" order="7" weight="0.32534248" />
       <window_info id="Capture Tool" order="2" />
       <window_info id="Designer" order="2" />
-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.17760417" />
+      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.26892745" />
       <window_info anchor="bottom" id="sbt-shell-toolwindow" order="8" />
       <window_info anchor="right" id="Database" order="3" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
       <window_info id="UI Designer" order="2" />
       <window_info anchor="right" id="Theme Preview" order="3" />
-      <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.39897436" />
-      <window_info anchor="bottom" id="Messages" order="7" sideWeight="0.4984375" weight="0.32820514" />
+      <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="right" id="Commander" order="0" weight="0.4" />
       <window_info anchor="bottom" id="Find" order="1" />
@@ -626,7 +643,8 @@
     <MESSAGE value="** update Readme file" />
     <MESSAGE value="** update readme file" />
     <MESSAGE value="** add google speech to text API support for voice messages" />
-    <option name="LAST_COMMIT_MESSAGE" value="** add google speech to text API support for voice messages" />
+    <MESSAGE value="** add comments to files and describe functionality" />
+    <option name="LAST_COMMIT_MESSAGE" value="** add comments to files and describe functionality" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -634,30 +652,6 @@
     </breakpoint-manager>
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/src/main/scala/bot/ContextTelegramBot.scala">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="255">
-          <caret line="17" lean-forward="true" selection-start-line="17" selection-end-line="17" />
-          <folding>
-            <element signature="e#12#51#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/project/target/config-classes/$3cfb92979eaa69036e87.class">
-      <provider selected="true" editor-type-id="text-editor">
-        <state>
-          <caret column="7" selection-start-column="7" selection-end-column="7" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/project/target/config-classes/$eee6f1e0c235f607bb4e.class">
-      <provider selected="true" editor-type-id="text-editor">
-        <state>
-          <caret column="7" selection-start-column="7" selection-end-column="7" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/.gitignore">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="90">
@@ -826,20 +820,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/resources/org/vcgdev/supportctxbot/BotResponseRules.drl">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="825">
-          <caret line="55" column="62" selection-start-line="55" selection-start-column="62" selection-end-line="55" selection-end-column="62" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://$USER_HOME$/.ivy2/cache/info.mukel/telegrambot4s_2.11/srcs/telegrambot4s_2.11-3.0.14-sources.jar!/info/mukel/telegrambot4s/api/declarative/Messages.scala">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="178">
-          <caret line="21" column="28" lean-forward="true" selection-start-line="21" selection-start-column="28" selection-end-line="21" selection-end-column="28" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/LICENSE">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="-810" />
@@ -862,47 +842,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/resources/application.properties">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="75">
-          <caret line="5" selection-start-line="5" selection-end-line="15" selection-end-column="64" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/main/scala/bot/BotResponse.scala">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="75">
           <caret line="5" column="27" selection-start-line="5" selection-start-column="27" selection-end-line="5" selection-end-column="27" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/scala/bot/ContextTelegramBot.scala">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="285">
-          <caret line="19" column="47" selection-start-line="19" selection-start-column="47" selection-end-line="19" selection-end-column="47" />
-          <folding>
-            <element signature="e#12#51#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/scala/config/logger/CustomAgendaEventListener.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="435">
-          <caret line="29" column="13" lean-forward="true" selection-start-line="29" selection-start-column="13" selection-end-line="29" selection-end-column="13" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/scala/config/oauth/OauthCredentials.scala">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="340">
-          <caret line="42" column="51" selection-start-line="42" selection-start-column="51" selection-end-line="42" selection-end-column="51" />
-          <folding>
-            <element signature="e#22#65#0" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -945,63 +888,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="645">
           <caret line="43" column="31" lean-forward="true" selection-start-line="43" selection-start-column="31" selection-end-line="43" selection-end-column="31" />
-          <folding>
-            <element signature="e#16#35#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/scala/kie/Kie.scala">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="105">
-          <caret line="7" column="11" lean-forward="true" selection-start-line="7" selection-start-column="11" selection-end-line="7" selection-end-column="11" />
-          <folding>
-            <element signature="e#13#43#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/scala/kie/BotFacts.scala">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="165">
-          <caret line="11" column="18" selection-start-line="11" selection-start-column="18" selection-end-line="11" selection-end-column="18" />
-          <folding>
-            <element signature="e#12#32#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/scala/kie/ConversationContext.scala">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="75">
-          <caret line="5" column="76" selection-start-line="5" selection-start-column="76" selection-end-line="5" selection-end-column="76" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/scala/kie/BotResponseEngine.scala">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="240">
-          <caret line="16" column="40" selection-start-line="16" selection-start-column="40" selection-end-line="16" selection-end-column="40" />
-          <folding>
-            <element signature="e#13#29#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/scala/wit/WitAiProcessor.scala">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="615">
-          <caret line="41" column="4" selection-start-line="41" selection-start-column="4" selection-end-line="41" selection-end-column="51" />
-          <folding>
-            <element signature="e#12#55#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/scala/wit/WitIntent.scala">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="150">
-          <caret line="10" column="57" selection-start-line="10" selection-start-column="57" selection-end-line="10" selection-end-column="57" />
         </state>
       </provider>
     </entry>
@@ -1012,13 +898,121 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/scala/wit/WitIntent.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="150">
+          <caret line="10" column="57" selection-start-line="10" selection-start-column="57" selection-end-line="10" selection-end-column="57" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/scala/kie/BotFacts.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="150">
+          <caret line="10" column="18" selection-start-line="10" selection-start-column="18" selection-end-line="10" selection-end-column="18" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/scala/config/logger/CustomAgendaEventListener.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="435">
+          <caret line="29" column="13" lean-forward="true" selection-start-line="29" selection-start-column="13" selection-end-line="29" selection-end-column="13" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$USER_HOME$/.ivy2/cache/info.mukel/telegrambot4s_2.11/srcs/telegrambot4s_2.11-3.0.14-sources.jar!/info/mukel/telegrambot4s/api/declarative/Messages.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="178">
+          <caret line="55" column="6" selection-start-line="55" selection-start-column="6" selection-end-line="55" selection-end-column="6" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$USER_HOME$/.ivy2/cache/org.kie/kie-api/srcs/kie-api-6.0.1.Final-sources.jar!/org/kie/api/runtime/KieContainer.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="607">
+          <caret line="127" column="24" selection-start-line="127" selection-start-column="24" selection-end-line="127" selection-end-column="24" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/resources/META-INF/kmodule.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="15">
+          <caret line="1" lean-forward="true" selection-start-line="1" selection-end-line="1" selection-end-column="53" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/resources/application.properties">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="225">
+          <caret line="15" column="39" selection-start-line="15" selection-start-column="39" selection-end-line="15" selection-end-column="39" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/scala/wit/WitAiProcessor.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="523">
+          <caret line="45" selection-start-line="45" selection-end-line="45" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/scala/kie/Kie.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="100">
+          <caret line="15" column="32" selection-start-line="15" selection-start-column="28" selection-end-line="15" selection-end-column="32" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/scala/kie/BotResponseEngine.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="120">
+          <caret line="21" column="53" lean-forward="true" selection-start-line="21" selection-start-column="53" selection-end-line="21" selection-end-column="53" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/scala/kie/ConversationContext.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="165">
+          <caret line="11" column="47" lean-forward="true" selection-start-line="11" selection-start-column="47" selection-end-line="11" selection-end-column="47" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/resources/org/vcgdev/supportctxbot/BotResponseRules.drl">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="420">
+          <caret line="28" column="24" selection-start-line="28" selection-start-column="24" selection-end-line="28" selection-end-column="24" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/scala/bot/ContextTelegramBot.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="165">
+          <caret line="14" column="22" selection-start-line="14" selection-start-column="22" selection-end-line="14" selection-end-column="22" />
+          <folding>
+            <element signature="e#12#51#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/scala/config/oauth/OauthCredentials.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="870">
+          <caret line="68" selection-start-line="68" selection-end-line="68" />
+          <folding>
+            <element signature="e#22#65#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/src/main/scala/telegram/SafeBot.scala">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="790">
-          <caret line="144" column="31" selection-start-line="144" selection-start-column="31" selection-end-line="144" selection-end-column="31" />
-          <folding>
-            <element signature="e#18#39#0" expanded="true" />
-          </folding>
+        <state relative-caret-position="735">
+          <caret line="73" column="59" selection-start-line="73" selection-start-column="59" selection-end-line="73" selection-end-column="59" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/resources/intents.json">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="127">
+          <caret line="156" column="3" lean-forward="true" selection-start-line="156" selection-start-column="3" selection-end-line="156" selection-end-column="3" />
         </state>
       </provider>
     </entry>

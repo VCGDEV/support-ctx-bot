@@ -8,6 +8,7 @@ import config.oauth.OauthFactory
 import info.mukel.telegrambot4s.api.declarative.Commands
 import info.mukel.telegrambot4s.api.{Polling, TelegramBot}
 import info.mukel.telegrambot4s.methods.GetFile
+
 import scala.io.Source
 import org.slf4j.{LoggerFactory, MDC}
 import wit.WitAiProcessor
@@ -20,6 +21,7 @@ import akka.http.scaladsl.model.{HttpRequest, Uri}
 import akka.http.scaladsl.unmarshalling.Unmarshal
 import akka.util.ByteString
 import google.GoogleSpeechRecognition
+import kie.{BotResponseEngine, MessageResponse}
 
 import scala.concurrent.Future
 import scala.util.Random
@@ -68,7 +70,9 @@ object SafeBot extends TelegramBot with Polling with Commands {
         }
       case None =>
         msg.text match {
-          case Some(text) => reply(getUserIntent(text,msg.chat.id,name))
+          case Some(text) =>
+            if(!text.isEmpty && !ignoredWords.contains(text))
+              reply(getUserIntent(text,msg.chat.id,name))
           case None => logger.error("Message without voice and text")
         }
     }
@@ -87,12 +91,12 @@ object SafeBot extends TelegramBot with Polling with Commands {
     var reply:String = ""
     if(!ignoredWords.contains(msgText)){
       val witResponse = WitAiProcessor.getIntents(msgText)
-      logger.debug(s"$witResponse")
+      logger.info(s"$witResponse")
       val intent = witResponse.entities.get("intent")
-      //BotResponseEngine.determineBotResponse(MessageResponse(w.value, witResponse.entities.filterKeys(!_.equals("intent"))),chatId) TODO pass the intent to drools and make something
       intent match {
         case Some(witIntents) =>
           witIntents.foreach(intent=>{
+            BotResponseEngine.determineBotResponse(MessageResponse(intent.value, witResponse.entities.filterKeys(!_.equals("intent"))),chatId) //TODO pass the intent to drools and make something
             logger.info(s"Processing intent ${intent.value} with confidence: ${intent.confidence}")
             val answers = botResponses.filter(p=>p.tag==intent.value)
             if(answers.length>0){
@@ -101,7 +105,9 @@ object SafeBot extends TelegramBot with Polling with Commands {
               reply = "No training for your request"
             }
           })
-        case None => reply = "Lo lamento no puedo entenderte"
+        case None =>
+          BotResponseEngine.determineBotResponse(MessageResponse("None", witResponse.entities.filterKeys(!_.equals("intent"))),chatId) //TODO pass the intent to drools and make something
+          reply = "Working in this bot"
       }
     }else logger.info("Bot don process word")
     reply

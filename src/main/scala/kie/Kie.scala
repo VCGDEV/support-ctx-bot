@@ -20,4 +20,5 @@ object Kie {
  def getStatelessSession(sessionId:String):StatelessKieSession = {
   kieContainer.newStatelessKieSession(sessionId)
  }
+
 }
