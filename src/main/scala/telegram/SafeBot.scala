@@ -39,7 +39,6 @@ object SafeBot extends TelegramBot with Polling with Commands {
   lazy val token: String = scala.util.Properties.envOrNone("BOT_TOKEN")
     .getOrElse(Source.fromInputStream(getClass.getResourceAsStream("/bot.token")).getLines().mkString)
   implicit val formats: DefaultFormats.type = net.liftweb.json.DefaultFormats
-  val botResponses: Array[BotResponse] = loadResponses()
   val ignoredWords:Seq[String] = Seq("/start","/credentials")
   override val logger = Logger(LoggerFactory.getLogger(SafeBot.getClass))
   val db = slick.jdbc.JdbcBackend.Database.forConfig("db.config");
@@ -98,32 +97,15 @@ object SafeBot extends TelegramBot with Polling with Commands {
       intent match {
         case Some(witIntents) =>
           witIntents.foreach(intent=>{
-            BotResponseEngine.determineBotResponse(MessageResponse(intent.value, witResponse.entities.filterKeys(!_.equals("intent"))),chatId) //TODO pass the intent to drools and make something
             logger.info(s"Processing intent ${intent.value} with confidence: ${intent.confidence}")
-            val answers = botResponses.filter(p=>p.tag==intent.value)
-            if(answers.length>0){
-              reply = getRandomElement(answers(0).responses, new Random(System.currentTimeMillis())).replace("{name}",name)
-            }else{
-              reply = "No se tiene clasificacion para su peticion"
-            }
+            reply = BotResponseEngine.determineBotResponse(MessageResponse(intent.value, witResponse.entities.filterKeys(!_.equals("intent")),"Default message"),chatId)
           })
         case None =>
-          BotResponseEngine.determineBotResponse(MessageResponse("None", witResponse.entities.filterKeys(!_.equals("intent"))),chatId) //TODO pass the intent to drools and make something
-          reply = "No se detecto ninguna intencion"
+          reply = BotResponseEngine.determineBotResponse(MessageResponse("None", witResponse.entities.filterKeys(!_.equals("intent")),"Default Message"),chatId)
+          //reply = "No se detecto ninguna intencion"
       }
     }else logger.info("Bot don process word")
-    reply
-  }
-
-  /***
-    *  Load default responses from <strong>/intents.json</strong> file
-    *  @return array with BotResponse objects
-    */
-  def loadResponses():Array[BotResponse] = {
-    val stream = getClass.getResourceAsStream("/intents.json")
-    val jsonString:String = Source.fromInputStream(stream).getLines
-        .mkString
-    parse(jsonString).extract[Array[BotResponse]]
+    reply.replace("{name}",name)
   }
 
   /**

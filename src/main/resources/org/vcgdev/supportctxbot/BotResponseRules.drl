@@ -8,18 +8,17 @@ global ConversationContext conversationContext
 rule "Hello intent"
     when $a:MessageResponse(intent=="hello")
     then
-        elegibleResponses.add("hello");
-        System.out.print("Current conversation context "+conversationContext);
+        $a.setResponse("Hola {name}, en que puedo ayudate");
      end
 rule "Bye intent"
     when $a:MessageResponse(intent=="bye")
     then
-        elegibleResponses.add("bye");
+        $a.setResponse("Hasta luego {name}!");
      end
 rule "Request name intent"
     when $a:MessageResponse(intent=="send_description")
     then
-        elegibleResponses.add("send_name");
+        $a.setResponse("Gracias por preguntar {name}, mi nombre es Luky, y por el momento puedo ayudarte a clasificar el problema de soporte que tengas y guardarlo en el sistema Asigno!, En que te puedo ayudar?");
      end
 rule "Thanks intent"
     when $a:MessageResponse(intent=="thanks")
