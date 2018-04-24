@@ -157,6 +157,26 @@
   {
     "tag":"applications_documents_control",
     "responses":["Main class: Aplicaciones - Subcategory: Control de documentos"],
-    "context":"servers_software"
+    "context":"app_document"
+  },
+  {
+    "tag":"applications_pos",
+    "responses":["Main class: Aplicaciones - Subcategory: Punto de Venta"],
+    "context":"app_pos"
+  },
+  {
+    "tag":"applications_erp",
+    "responses":["Main class: Aplicaciones - Subcategory: ERP"],
+    "context":"app_erp"
+  },
+  {
+    "tag":"providers_teleco",
+    "responses":["Main class: Proveedores - Subcategory: Telecomunicaciones"],
+    "context":"teleco"
+  },
+  {
+    "tag":"telephony_configuration",
+    "responses":["Main class: Telefonia - Subcategory: Configuracion"],
+    "context":"telephony_configuration"
   }
 ]

@@ -29,3 +29,10 @@ libraryDependencies ++= {
     List("drools-compiler", "drools-core", "drools-jsr94", "drools-decisiontables", "knowledge-api")
       .map("org.drools" % _ % droolsVersion)
 }
+
+libraryDependencies ++= Seq(
+"com.typesafe.slick" %% "slick" % "3.2.3",
+"org.postgresql" % "postgresql" % "9.4.1212",
+"com.h2database" % "h2" % "1.4.196" % "test",
+"com.typesafe.slick" %% "slick-hikaricp" % "3.2.3"
+)

@@ -42,6 +42,7 @@ object SafeBot extends TelegramBot with Polling with Commands {
   val botResponses: Array[BotResponse] = loadResponses()
   val ignoredWords:Seq[String] = Seq("/start","/credentials")
   override val logger = Logger(LoggerFactory.getLogger(SafeBot.getClass))
+  val db = slick.jdbc.JdbcBackend.Database.forConfig("db.config");
 
   /**
     * Process <strong>/start</strong> command from telegram
@@ -60,6 +61,7 @@ object SafeBot extends TelegramBot with Polling with Commands {
   onMessage({implicit msg =>{
     MDC.put("UUID",UUID.randomUUID().toString)
     val name = msg.from.get.firstName
+    logger.info(s"Send response to user: $name")
     msg.voice match {
       case Some(voice) =>
           logger.info(s"Download Telegram voice record ${voice.fileId}")
@@ -102,12 +104,12 @@ object SafeBot extends TelegramBot with Polling with Commands {
             if(answers.length>0){
               reply = getRandomElement(answers(0).responses, new Random(System.currentTimeMillis())).replace("{name}",name)
             }else{
-              reply = "No training for your request"
+              reply = "No se tiene clasificacion para su peticion"
             }
           })
         case None =>
           BotResponseEngine.determineBotResponse(MessageResponse("None", witResponse.entities.filterKeys(!_.equals("intent"))),chatId) //TODO pass the intent to drools and make something
-          reply = "Working in this bot"
+          reply = "No se detecto ninguna intencion"
       }
     }else logger.info("Bot don process word")
     reply
