@@ -1,11 +1,15 @@
 package kie
 
-import java.util
+import java.sql.Date
 
+import bot.{IntentClassification}
 import com.typesafe.scalalogging.Logger
 import config.logger.CustomAgendaEventListener
 import org.slf4j.LoggerFactory
+import repository.model.{Conversation, ConversationDao}
 
+import scala.io.Source
+import net.liftweb.json.{DefaultFormats, parse}
 /**
   * @author Victor de la Cruz
   * @version 1.0.0
@@ -13,27 +17,32 @@ import org.slf4j.LoggerFactory
   * */
 object BotResponseEngine {
   val logger = Logger(LoggerFactory.getLogger(BotResponseEngine.getClass))
+  val classifications = loadIntentClassifications()
+
   /**
     *  Fire rules to obtain bot response
     *  @param process the response to process in the rules
-    *  @param sessionId chat Id from telegram
     * */
-
-  def determineBotResponse(process:MessageResponse,sessionId:Long): String = {
-    logger.info(s"Create session for chat: $sessionId")
-    val elegibleResponses = new util.ArrayList[String]()
+  def determineBotResponse(process:MessageResponse): String = {
     val session = Kie.newSession
-    var conversationContext = new ConversationContext("")
-    //logger.info(s"The session id is: ${session.getId}")
-    session.setGlobal("elegibleResponses",elegibleResponses)
-    session.setGlobal("conversationContext",conversationContext)
+    logger.info(s"Sending data to rule engine - ConversationContext: ${process.conversation.currentContext}")
+    val classFind = classifications.find(c => c.tag == process.intent)
+    if(classFind.isDefined)
+      process.setClassification(classFind.get)
     session.insert(process)
-    session.insert(conversationContext)
     session.addEventListener(new CustomAgendaEventListener())
     session.fireAllRules()
-    //session.dispose()
-    //session.execute(process)
-    logger.info(s"Data bean after rule fire: ${process.getReply()}")
-    process.getReply()
+    //update conversation with new values
+    val conversation:Conversation = process.conversation// Conversation(process.chatId,process.context,process.sendNextToWit, new Date(new java.util.Date().getTime))
+    ConversationDao.update(conversation)
+    process.responseString
+  }
+
+  def loadIntentClassifications():List[IntentClassification] = {
+    implicit val formats: DefaultFormats.type = net.liftweb.json.DefaultFormats
+    val stream = getClass.getResourceAsStream("/intents.json")
+    val jsonString:String = Source.fromInputStream(stream).getLines
+      .mkString
+    parse(jsonString).extract[List[IntentClassification]]
   }
 }

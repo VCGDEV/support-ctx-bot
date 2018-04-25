@@ -1,182 +1,162 @@
 [
   {
-    "tag":"hello",
-    "responses":["Hola {name} bienvenid@, en que puedo ayudarte?","Hola {name} que tal"],
-    "context":""
+    "tag":"network_vpn",
+    "mainCategoryId":"94",
+    "categoryId":"102"
   },
-  {
-    "tag":"bye",
-    "responses":["Muy bien, hasta luego {name}","Adios {name}, esperemos que escribas pronto","Hasta luego"],
-    "context":""
-  },
-  {
-    "tag":"thanks",
-    "responses":["Es un placer","por nada","estoy para servirte :D","un placer atenderte"],
-    "context":""
-  },
-  {
-    "tag":"send_description",
-    "responses":["Mi nombre es Luky y me pongo a tus ordenes para ayudarte a clasificar e ingresar tickets a nuestro sistema",
-    "Gracias por preguntar :D, mi nombre es Luky y tratare de clasificar los problemas que tengas e ingresarlas a nuestro sistema de tickets llamado: Asigno"],
-    "context":""
-  },{
-  "tag":"network_vpn",
-  "responses":["Main class: Redes - Subcategory: VPN"],
-  "context":"network"
-},
   {
     "tag":"mail_training",
-    "responses":["Main class: Correo - Subcategory: Entranamiento"],
-    "context":"mail"
+    "mainCategoryId":"51",
+    "categoryId":"57"
   },
   {
     "tag":"network_configuration",
-    "responses":["Main class: Redes - Subcategory: Configuracion"],
-    "context":"network"
+    "mainCategoryId":"94",
+    "categoryId":"57"
   },
   {
     "tag":"network_internet",
-    "responses":["Main class: Redes - Subcategory: Internet"],
-    "context":"network"
+    "mainCategoryId":"94",
+    "categoryId":"100"
   },
   {
     "tag":"network_wireles",
-    "responses":["Main class: Redes - Subcategory: Wireles"],
-    "context":"network"
+    "mainCategoryId":"94"
+    "categoryId":"103"
   },
   {
     "tag":"mail_delete_account",
-    "responses":["Main class: Correo - Subcategory: Eliminar cuentas"],
-    "context":"mail"
+    "mainCategoryId":"51",
+    "categoryId":"56"
   },
   {
     "tag":"mail_configuration",
-    "responses":["Main class: Correo - Subcategory: Configuracion"],
-    "context":"mail"
+    "mainCategoryId":"51",
+    "categoryId":"57"
   },
   {
     "tag":"mail_create_account",
-    "responses":["Main class: Correo - Subcategory: Crear cuenta"],
-    "context":"mail"
+    "mainCategoryId":"51",
+    "categoryId":"55"
   },
   {
     "tag":"network_structured_cabling",
-    "responses":["Main class: Redes - Subcategory: Cableado estructurado"],
-    "context":"network"
+    "mainCategoryId":"94",
+    "categoryId":"95"
   },
   {
     "tag":"mail_password_change",
-    "responses":["Main class: Correo - Subcategory: Cambiar password"],
-    "context":"Mail"
+    "mainCategoryId":"51",
+    "categoryId":"52"
   },
   {
     "tag":"special_activity_inventory",
-    "responses":["Main class: Actividad Especial - Subcategory: Inventarios"],
-    "context":"inventory"
+    "mainCategoryId":"25",
+    "categoryId":"34"
   },
   {
     "tag":"special_activity_preventive_maintenance",
-    "responses":["Main class: Actividad Especial - Subcategory: Mantenimiento preventivo"],
-    "context":"preventive_maintenance"
+    "mainCategoryId":"25",
+    "categoryId":"32"
   },
   {
     "tag":"special_activity_reinstall",
-    "responses":["Main class: Actividad Especial - Subcategory: Reinstalar equipo"],
-    "context":"reinstall"
+    "mainCategoryId":"25",
+    "categoryId":"33"
   },
   {
     "tag":"special_activity_change_equipment",
-    "responses":["Main class: Actividad Especial - Subcategory: Cambio de equipo"],
-    "context":"new_equipment"
+    "mainCategoryId":"25",
+    "categoryId":"26"
   },
   {
     "tag":"special_activity_quote",
-    "responses":["Main class: Actividad especial - Subcategory: Cotizacion"],
-    "context":"quote"
+    "mainCategoryId":"25",
+    "categoryId":"27"
   },
   {
     "tag":"special_activity_guarantee",
-    "responses":["Main class: Actividad especial - Subcategory: Garantia"],
-    "context":"guarantee"
+    "mainCategoryId":"25",
+    "categoryId":"30"
   },
   {
     "tag":"special_activity_install_equipment",
-    "responses":["Main class: Actividad especial - Subcategory: Instalar equipo"],
-    "context":"install_equipment"
+    "mainCategoryId":"25",
+    "categoryId":"31"
   },
   {
     "tag":"pc_officce",
-    "responses":["Main class PC's - Subcategory: Office"],
-    "context":"office"
+    "mainCategoryId":"28",
+    "categoryId":"83"
   },
   {
     "tag":"pc_os",
-    "responses":["Main class: PC's - Subcategory - Sistema Operativo"],
-    "context":"operating_system"
+    "mainCategoryId":"28",
+    "categoryId":"85"
   },
   {
     "tag":"pc_antivirus",
-    "responses":["Main class: PC's - Subcategory - Antivirus"],
-    "context":"antivirus"
+    "mainCategoryId":"28",
+    "categoryId":"78"
   },
   {
     "tag":"pc_hardware",
-    "responses":["Main class: PC's - Subcategory - Hardware"],
-    "context":"antivirus"
+    "mainCategoryId":"28",
+    "categoryId":"29"
   },
   {
     "tag":"pc_printers",
-    "responses":["Main class: PC's - Subcategory - Impresoras"],
-    "context":"printer"
+    "mainCategoryId":"28",
+    "categoryId":"80"
   },
   {
     "tag":"pc_software",
-    "responses":["Main class: PC's - Subcategory - Software"],
-    "context":"sftware"
+    "mainCategoryId":"28",
+    "categoryId":"86"
   },
   {
     "tag":"servers_data_base",
-    "responses":["Main class: Servidores - Subcategory: Base de Datos"],
-    "context":"database"
+    "mainCategoryId":"104",
+    "categoryId":"105"
   },
   {
     "tag":"servers_hardware",
-    "responses":["Main class: Servidores - Subcategory: Hardware"],
-    "context":"servers"
+    "mainCategoryId":"104",
+    "categoryId":""
   },
   {
     "tag":"server_os",
-    "responses":["Main class: Servidores - Subcategory: Sistema operativo"],
-    "context":"servers_os"
+    "mainCategoryId":"104",
+    "categoryId":"108"
   },
   {
     "tag":"servers_software",
-    "responses":["Main class: Servidores - Subcategory: Software"],
-    "context":"servers_software"
+    "mainCategoryId":"104",
+    "categoryId":"109"
   },
   {
     "tag":"applications_documents_control",
-    "responses":["Main class: Aplicaciones - Subcategory: Control de documentos"],
-    "context":"app_document"
+    "mainCategoryId":"35",
+    "categoryId":"36"
   },
   {
     "tag":"applications_pos",
-    "responses":["Main class: Aplicaciones - Subcategory: Punto de Venta"],
-    "context":"app_pos"
+    "mainCategoryId":"35",
+    "categoryId":"42"
   },
   {
     "tag":"applications_erp",
-    "responses":["Main class: Aplicaciones - Subcategory: ERP"],
-    "context":"app_erp"
+    "mainCategoryId":"35",
+    "categoryId":"38"
   },
   {
     "tag":"providers_teleco",
-    "responses":["Main class: Proveedores - Subcategory: Telecomunicaciones"],
-    "context":"teleco"
+    "mainCategoryId":"89",
+    "categoryId":"93"
   },
   {
     "tag":"telephony_configuration",
-    "responses":["Main class: Telefonia - Subcategory: Configuracion"],
-    "context":"telephony_configuration"
+    "mainCategoryId":"112",
+    "categoryId":"118"
   }
 ]
