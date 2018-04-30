@@ -39,7 +39,7 @@ object AsignoRestClient {
     }
   }
 
-  def createTicket(ticket: Ticket): Boolean = {
+  def createTicket(ticket: Ticket): String = {
     logger.info(s"Crear nuevo Ticket $ticket")
     val uri = s"$urlEndPoint/tickets"
     val response = Await.result(
@@ -49,7 +49,10 @@ object AsignoRestClient {
         .addHeaders("Content-Type"->"application/json")
         .apply
       ,20.second)
-    logger.debug(s"Response code: ${response.code} - body ${response.bodyString}")
-    response.code == HttpResponseCode.Ok || response.code == HttpResponseCode.Created
+    logger.info(s"Response code: ${response.code} - body ${response.bodyString}")
+    if(response.code == HttpResponseCode.Ok || response.code == HttpResponseCode.Created)
+      response.bodyString
+    else
+      ""
   }
 }

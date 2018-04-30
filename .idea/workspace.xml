@@ -3,16 +3,14 @@
   <component name="ChangeListManager">
     <list id="464acf96-d2bd-4797-8fe2-b9b41d8616d9" name="** add .gitignore" comment="** add .gitignore --" />
     <list default="true" id="79f9c19b-db37-48a6-847f-9885779e3909" name="Default" comment="** remove to println">
-      <change afterPath="$PROJECT_DIR$/src/main/scala/repository/model/IssueNotClassified.scala" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/modules/root.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules/root.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/application.properties" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/resources/bot.token" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/bot.token" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/resources/intents.json" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/intents.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/resources/org/vcgdev/supportctxbot/BotResponseRules.drl" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/org/vcgdev/supportctxbot/BotResponseRules.drl" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/scala/asigno/AsignoRestClient.scala" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/scala/asigno/AsignoRestClient.scala" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/scala/kie/BotFacts.scala" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/scala/kie/BotFacts.scala" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/scala/repository/model/Conversation.scala" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/scala/repository/model/Conversation.scala" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/scala/telegram/SafeBot.scala" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/scala/telegram/SafeBot.scala" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/target/" />
     <ignored path="$PROJECT_DIR$/project/project/target/" />
@@ -50,17 +48,10 @@
       <file leaf-file-name="BotFacts.scala" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/scala/kie/BotFacts.scala">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="486">
-              <caret line="102" column="1" lean-forward="true" selection-start-line="102" selection-start-column="1" selection-end-line="102" selection-end-column="1" />
+            <state relative-caret-position="231">
+              <caret line="85" column="11" selection-start-line="85" selection-start-column="11" selection-end-line="85" selection-end-column="11" />
               <folding>
                 <element signature="e#12#37#0" expanded="true" />
-                <element signature="e#950#1203#0" />
-                <element signature="e#1600#1901#0" />
-                <element signature="e#1904#2127#0" />
-                <element signature="e#2211#2351#0" />
-                <element signature="e#2355#2421#0" />
-                <element signature="e#2425#2698#0" />
-                <element signature="e#2702#3909#0" />
               </folding>
             </state>
           </provider>
@@ -69,43 +60,28 @@
       <file leaf-file-name="BotResponseRules.drl" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/main/resources/org/vcgdev/supportctxbot/BotResponseRules.drl">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="480">
-              <caret line="98" column="32" selection-start-line="98" selection-start-column="32" selection-end-line="98" selection-end-column="32" />
+            <state relative-caret-position="315">
+              <caret line="78" column="8" lean-forward="true" selection-start-line="78" selection-start-column="8" selection-end-line="78" selection-end-column="8" />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="SafeBot.scala" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/scala/telegram/SafeBot.scala">
+      <file leaf-file-name="application.conf" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/main/resources/application.conf">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="56">
-              <caret line="76" column="3" lean-forward="true" selection-start-line="76" selection-start-column="3" selection-end-line="76" selection-end-column="3" />
-              <folding>
-                <element signature="e#18#43#0" expanded="true" />
-              </folding>
+            <state relative-caret-position="150">
+              <caret line="10" column="1" lean-forward="true" selection-start-line="10" selection-start-column="1" selection-end-line="10" selection-end-column="1" />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="IssueNotClassified.scala" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/scala/repository/model/IssueNotClassified.scala">
+      <file leaf-file-name="AsignoRestClient.scala" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/main/scala/asigno/AsignoRestClient.scala">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="60">
-              <caret line="4" column="11" selection-start-line="4" selection-start-column="11" selection-end-line="4" selection-end-column="11" />
+            <state relative-caret-position="276">
+              <caret line="41" column="13" selection-start-line="41" selection-start-column="13" selection-end-line="41" selection-end-column="13" />
               <folding>
-                <element signature="e#148#187#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="ConversationDao.scala" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/scala/repository/model/ConversationDao.scala">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="105">
-              <caret line="7" column="53" selection-start-line="7" selection-start-column="53" selection-end-line="7" selection-end-column="53" />
-              <folding>
-                <element signature="e#27#57#0" expanded="true" />
+                <element signature="e#16#35#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -131,6 +107,7 @@
       <find>request_summary</find>
       <find>servers_hard</find>
       <find>MessageResponse</find>
+      <find>TicketCreated</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -178,7 +155,6 @@
         <option value="$PROJECT_DIR$/src/main/scala/kie/BotResponseEngine.scala" />
         <option value="$PROJECT_DIR$/src/main/scala/asigno/LabelView.scala" />
         <option value="$PROJECT_DIR$/src/main/scala/asigno/TicketType.scala" />
-        <option value="$PROJECT_DIR$/src/main/scala/asigno/AsignoRestClient.scala" />
         <option value="$PROJECT_DIR$/src/main/scala/asigno/Ticket.scala" />
         <option value="$PROJECT_DIR$/src/main/scala/asigno/CustomerData.scala" />
         <option value="$PROJECT_DIR$/src/main/scala/asigno/TicketCategory.scala" />
@@ -187,8 +163,9 @@
         <option value="$PROJECT_DIR$/src/main/scala/repository/model/IssueNotClassified.scala" />
         <option value="$PROJECT_DIR$/src/main/scala/repository/model/IssueNotClassifiedDao.scala" />
         <option value="$PROJECT_DIR$/src/main/scala/repository/model/Conversation.scala" />
-        <option value="$PROJECT_DIR$/src/main/scala/kie/BotFacts.scala" />
         <option value="$PROJECT_DIR$/src/main/scala/telegram/SafeBot.scala" />
+        <option value="$PROJECT_DIR$/src/main/scala/asigno/AsignoRestClient.scala" />
+        <option value="$PROJECT_DIR$/src/main/scala/kie/BotFacts.scala" />
         <option value="$PROJECT_DIR$/src/main/resources/org/vcgdev/supportctxbot/BotResponseRules.drl" />
       </list>
     </option>
@@ -237,14 +214,6 @@
               <item name="main" type="462c0819:PsiDirectoryNode" />
               <item name="scala" type="462c0819:PsiDirectoryNode" />
             </path>
-            <path>
-              <item name="suppport-ctx-bot" type="b2602c69:ProjectViewProjectNode" />
-              <item name="support-ctx-bot" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="main" type="462c0819:PsiDirectoryNode" />
-              <item name="scala" type="462c0819:PsiDirectoryNode" />
-              <item name="telegram" type="462c0819:PsiDirectoryNode" />
-            </path>
           </expand>
           <select />
         </subPane>
@@ -255,7 +224,7 @@
     </panes>
   </component>
   <component name="PropertiesComponent">
-    <property name="SearchEverywhereHistoryKey" value="dr&#9;FILE&#9;file:///home/vcruz/git/support-ctx-bot/src/main/resources/org/vcgdev/supportctxbot/BotResponseRules.drl&#10;drl&#9;FILE&#9;file:///home/vcruz/git/support-ctx-bot/src/main/resources/org/vcgdev/supportctxbot/BotResponseRules.drl&#10;MessageR&#9;null&#9;null" />
+    <property name="SearchEverywhereHistoryKey" value="D&#9;FILE&#9;file:///home/vcruz/git/support-ctx-bot/src/main/resources/org/vcgdev/supportctxbot/BotResponseRules.drl&#10;dr&#9;FILE&#9;file:///home/vcruz/git/support-ctx-bot/src/main/resources/org/vcgdev/supportctxbot/BotResponseRules.drl&#10;drl&#9;FILE&#9;file:///home/vcruz/git/support-ctx-bot/src/main/resources/org/vcgdev/supportctxbot/BotResponseRules.drl&#10;MessageR&#9;null&#9;null" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="aspect.path.notification.shown" value="true" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$/../mobile-driver-app" />
@@ -430,7 +399,7 @@
       <workItem from="1524842396268" duration="599000" />
       <workItem from="1524847978836" duration="638000" />
       <workItem from="1524849937938" duration="8164000" />
-      <workItem from="1525097333854" duration="19125000" />
+      <workItem from="1525097333854" duration="24200000" />
     </task>
     <task id="LOCAL-00001" summary="** add new tags, add drools for rule engine, add basic rule example">
       <created>1523398775417</created>
@@ -593,15 +562,21 @@
       <option name="project" value="LOCAL" />
       <updated>1525111236657</updated>
     </task>
-    <option name="localTasksCounter" value="24" />
+    <task id="LOCAL-00024" summary="** save not classified issue">
+      <created>1525118900620</created>
+      <option name="number" value="00024" />
+      <option name="presentableId" value="LOCAL-00024" />
+      <option name="project" value="LOCAL" />
+      <updated>1525118900620</updated>
+    </task>
+    <option name="localTasksCounter" value="25" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="281517000" />
+    <option name="totallyTimeSpent" value="286592000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="1920" y="0" width="1366" height="768" extended-state="6" />
-    <editor active="true" />
     <layout>
       <window_info anchor="right" id="Palette" order="3" />
       <window_info anchor="right" id="sbt" order="4" />
@@ -614,7 +589,7 @@
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
       <window_info id="UI Designer" order="2" />
-      <window_info anchor="bottom" id="Debug" order="3" weight="0.39819005" />
+      <window_info active="true" anchor="bottom" id="Debug" order="3" visible="true" weight="0.396875" />
       <window_info anchor="bottom" id="TODO" order="6" />
       <window_info anchor="bottom" id="Messages" order="7" sideWeight="0.4984375" weight="0.3265625" />
       <window_info anchor="right" id="Palette&#9;" order="3" />
@@ -703,15 +678,22 @@
     <MESSAGE value="** add basic functionality to rules, rules uses the intent and response with correct answer for: hello, bye and send_description intent" />
     <MESSAGE value="** fix rules processing" />
     <MESSAGE value="** add basi flow to create a Ticket after classify problem" />
-    <option name="LAST_COMMIT_MESSAGE" value="** add basi flow to create a Ticket after classify problem" />
+    <MESSAGE value="** save not classified issue" />
+    <option name="LAST_COMMIT_MESSAGE" value="** save not classified issue" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
-      <option name="time" value="10" />
+      <option name="time" value="11" />
     </breakpoint-manager>
   </component>
   <component name="debuggerHistoryManager">
     <expressions id="evaluateExpression">
+      <expression>
+        <expression-string>((HttpResponse)response).rawBody</expression-string>
+        <language-id>Scala</language-id>
+        <custom-info>com.stackmob.newman.response.HttpResponse</custom-info>
+        <evaluation-mode>EXPRESSION</evaluation-mode>
+      </expression>
       <expression>
         <expression-string>conversation.sendToNlpNext</expression-string>
         <language-id>Scala</language-id>
@@ -848,13 +830,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/resources/application.conf">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="120">
-          <caret line="8" column="16" lean-forward="true" selection-start-line="8" selection-start-column="16" selection-end-line="8" selection-end-column="16" />
-        </state>
-      </provider>
-    </entry>
     <entry file="jar://$USER_HOME$/.ivy2/cache/info.mukel/telegrambot4s_2.11/srcs/telegrambot4s_2.11-3.0.14-sources.jar!/info/mukel/telegrambot4s/api/declarative/Messages.scala">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="178">
@@ -943,13 +918,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/scala/asigno/CustomerView.scala">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="45">
-          <caret line="3" column="40" selection-start-line="3" selection-start-column="40" selection-end-line="3" selection-end-column="40" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/main/scala/asigno/CustomerData.scala">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="60">
@@ -999,16 +967,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/scala/asigno/AsignoRestClient.scala">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="290">
-          <caret line="41" column="31" lean-forward="true" selection-start-line="41" selection-start-column="31" selection-end-line="41" selection-end-column="31" />
-          <folding>
-            <element signature="e#16#35#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/main/scala/asigno/Ticket.scala">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="195">
@@ -1022,16 +980,6 @@
           <caret line="8" column="2" selection-start-line="8" selection-start-column="2" selection-end-line="8" selection-end-column="2" />
           <folding>
             <element signature="e#26#56#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/scala/repository/model/IssueNotClassified.scala">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="60">
-          <caret line="4" column="11" selection-start-line="4" selection-start-column="11" selection-end-line="4" selection-end-column="11" />
-          <folding>
-            <element signature="e#148#187#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -1057,30 +1005,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/resources/application.properties">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="225">
-          <caret line="15" column="64" lean-forward="true" selection-start-line="15" selection-start-column="64" selection-end-line="15" selection-end-column="64" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/scala/kie/BotFacts.scala">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="486">
-          <caret line="102" column="1" lean-forward="true" selection-start-line="102" selection-start-column="1" selection-end-line="102" selection-end-column="1" />
-          <folding>
-            <element signature="e#12#37#0" expanded="true" />
-            <element signature="e#950#1203#0" />
-            <element signature="e#1600#1901#0" />
-            <element signature="e#1904#2127#0" />
-            <element signature="e#2211#2351#0" />
-            <element signature="e#2355#2421#0" />
-            <element signature="e#2425#2698#0" />
-            <element signature="e#2702#3909#0" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/main/scala/telegram/SafeBot.scala">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="56">
@@ -1091,10 +1015,61 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/scala/repository/model/IssueNotClassified.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="60">
+          <caret line="4" column="11" selection-start-line="4" selection-start-column="11" selection-end-line="4" selection-end-column="11" />
+          <folding>
+            <element signature="e#148#187#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/scala/asigno/CustomerView.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="45">
+          <caret line="3" column="40" selection-start-line="3" selection-start-column="40" selection-end-line="3" selection-end-column="40" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/resources/application.properties">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="225">
+          <caret line="15" column="64" lean-forward="true" selection-start-line="15" selection-start-column="64" selection-end-line="15" selection-end-column="64" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/resources/application.conf">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="150">
+          <caret line="10" column="1" lean-forward="true" selection-start-line="10" selection-start-column="1" selection-end-line="10" selection-end-column="1" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/scala/asigno/AsignoRestClient.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="276">
+          <caret line="41" column="13" selection-start-line="41" selection-start-column="13" selection-end-line="41" selection-end-column="13" />
+          <folding>
+            <element signature="e#16#35#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/scala/kie/BotFacts.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="231">
+          <caret line="85" column="11" selection-start-line="85" selection-start-column="11" selection-end-line="85" selection-end-column="11" />
+          <folding>
+            <element signature="e#12#37#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/src/main/resources/org/vcgdev/supportctxbot/BotResponseRules.drl">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="480">
-          <caret line="98" column="32" selection-start-line="98" selection-start-column="32" selection-end-line="98" selection-end-column="32" />
+        <state relative-caret-position="315">
+          <caret line="78" column="8" lean-forward="true" selection-start-line="78" selection-start-column="8" selection-end-line="78" selection-end-column="8" />
         </state>
       </provider>
     </entry>

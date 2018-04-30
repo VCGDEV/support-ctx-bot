@@ -70,7 +70,7 @@ case class MessageResponse(var intent:String,var entities:Map[String,List[WitInt
     this.customerView == null
   }
 
-  def createTicket():Boolean = {
+  def createTicket():String = {
     val ticket = Ticket(new Date().getTime,customerData(),List(),TicketType(28),
       TicketCategory(conversation.subcategory,conversation.category),conversation.summary,conversation.description)
     AsignoRestClient.createTicket(ticket)

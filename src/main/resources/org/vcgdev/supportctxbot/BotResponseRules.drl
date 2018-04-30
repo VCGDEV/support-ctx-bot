@@ -6,6 +6,7 @@ declare Customer
 end
 declare TicketCreated
     isCreated: Boolean
+    folio: String
 end
 rule "El usuario esta saludando"
     when $a:MessageResponse(intent=="hello")
@@ -63,7 +64,8 @@ rule "Cliente encontrado en asigno - Se tiene lo necesario para crear el ticket"
         $a:MessageResponse(context()=="request_customer_data")
         $b:Customer(isInAsigno)
     then
-        insert(new TicketCreated($a.createTicket()));
+        String createTicket = $a.createTicket();
+        insert(new TicketCreated(!createTicket.isEmpty(),createTicket));
         $a.cleanConversation();
         $a.setContext("request_summary");//prepare to next issue
      end
@@ -72,7 +74,8 @@ rule "El ticket ha sido creado"
         $b: TicketCreated(isCreated)
         $c:Customer(isInAsigno)
     then
-        $a.setResponse("Gracias el ticket fue creado exitosamente");
+        $a.setResponse("El ticket fue creado exitosamente, puede consultar la informacion en:" +
+         "\n http://192.168.20.233/#tickets/details/"+$b.getFolio());
      end
 rule "El ticket no se creo en asigno"
     when $a:MessageResponse(context()=="request_customer_data")
