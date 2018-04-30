@@ -41,7 +41,7 @@ object SafeBot extends TelegramBot with Polling with Commands {
   lazy val token: String = scala.util.Properties.envOrNone("BOT_TOKEN")
     .getOrElse(Source.fromInputStream(getClass.getResourceAsStream("/bot.token")).getLines().mkString)
   implicit val formats: DefaultFormats.type = net.liftweb.json.DefaultFormats
-  val ignoredWords:Seq[String] = Seq("/start","/credentials")
+  val ignoredWords:Seq[String] = Seq("/start","/credentials","/clean")
   override val logger = Logger(LoggerFactory.getLogger(SafeBot.getClass))
   val db = slick.jdbc.JdbcBackend.Database.forConfig("db.config")
 
@@ -55,7 +55,26 @@ object SafeBot extends TelegramBot with Polling with Commands {
     * */
   onCommand("credentials") {implicit msg=>reply(OauthFactory.name())}
 
-
+  onCommand("clean"){implicit msg =>
+    ConversationDao.findById(msg.chat.id).onComplete{
+      case Success(s)=>
+        s match {
+          case Some(c)=>
+            c.summary = "request_summary"
+            c.category = ""
+            c.subcategory = ""
+            c.description = ""
+            c.sendToNlpNext = true
+            c.currentContext = ""
+            ConversationDao.update(c)
+            reply("Proceso cancelado exitosamente")
+          case None=>
+           reply("No existe proceso a cancelar")
+        }
+      case Failure(f)=>
+        reply("No fue posible seleccionar el proceso a ancelar")
+    }
+  }
 
 
   /**
@@ -121,7 +140,7 @@ object SafeBot extends TelegramBot with Polling with Commands {
     logger.info(s"Get user intent ${msgText}")
     var reply:String = ""
     if(!ignoredWords.contains(msgText)){
-      val messageResponse = MessageResponse("", Map(),conversation,msgText)
+      val messageResponse = MessageResponse("", Map(),conversation,msgText,chatId)
       if(conversation.sendToNlpNext){//enviar a wit.ai
         val witResponse = WitAiProcessor.getIntents(msgText)
         logger.info(s"${witResponse}")

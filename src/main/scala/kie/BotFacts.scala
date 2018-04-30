@@ -1,10 +1,11 @@
 package kie
+import java.sql.Timestamp
 import java.util.Date
 
 import asigno._
 import bot.IntentClassification
 import net.liftweb.json.DefaultFormats
-import repository.model.Conversation
+import repository.model.{Conversation, IssueNotClassified, IssueNotClassifiedDao}
 import wit.WitIntent
 import net.liftweb.json._
 import net.liftweb.json.Serialization.write
@@ -21,20 +22,21 @@ class BotFacts {
   * Class definition to manage intent and the entities to process in rule engine
   * */
 @BeanInfo
-case class MessageResponse(var intent:String,var entities:Map[String,List[WitIntent]],var conversation:Conversation, val message:String) extends BotFact{
+case class MessageResponse(var intent:String,var entities:Map[String,List[WitIntent]],var conversation:Conversation, val message:String,val chatId:Long) extends BotFact{
   var responseString:String = ""
   var classification:IntentClassification = null
   var customerView:CustomerView=null
   def setResponse(response:String) = this.responseString= response
   def setContext(context:String) = this.conversation.currentContext = context
   def context():String = this.conversation.currentContext
-  def clasifyConversation() = {
+  def classifyConversation() = {
     this.conversation.summary = message
     if (classification != null) {
       this.conversation.category = this.classification.mainCategoryId
       this.conversation.subcategory = this.classification.categoryId
     }
   }
+
   def sendNextMessageToWit(send:Boolean) = this.conversation.sendToNlpNext = send
   def setSummary(summary:String) = this.conversation.summary = summary
   def setDescription() = this.conversation.description = this.message
@@ -92,4 +94,10 @@ case class MessageResponse(var intent:String,var entities:Map[String,List[WitInt
     //ADD address and phones to LIST
     CustomerData(values,this.customerView.idCustomer)
   }
+
+  def saveNotClassified(): Unit ={
+    val issue = IssueNotClassified(0,this.conversation.summary,new Timestamp(new Date().getTime),chatId)
+    IssueNotClassifiedDao.save(issue)
+  }
+
 }

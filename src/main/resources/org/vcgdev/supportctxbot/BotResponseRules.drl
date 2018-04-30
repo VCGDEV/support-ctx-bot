@@ -22,7 +22,7 @@ rule "El usuario se despide del Bot"
 rule "El usuario esta solicitando la informacion del BOT"
     when $a:MessageResponse(intent=="send_description")
     then
-        $a.setResponse("Gracias por preguntar {name}, mi nombre es Luky, y por el momento puedo ayudarte a clasificar el problema de soporte que tengas y guardarlo en el sistema Asigno!, En que te puedo ayudar?");
+        $a.setResponse("Gracias por preguntar {name}, mi nombre es Luky, y por el momento puedo ayudarte a clasificar el problema de soporte que tengas y guardarlo en el sistema Asigno!,\n\n Para continuar ingresa una breve descripción del problema");
         $a.setContext("request_summary");
      end
 rule "El usuario agradece el servicio"
@@ -34,8 +34,8 @@ rule "Se detecta el problema"
     when $a:MessageResponse(intent!="thanks",intent!="bye",intent!="hello",intent!="send_description",intent!="")
     then
         $a.setContext("request_description");
-        $a.clasifyConversation();
-        $a.setResponse("{name}, Por favor ingresa la descripcion completa del problema");
+        $a.classifyConversation();
+        $a.setResponse("{name}, Por favor ingresa la descripción completa del problema");
         $a.sendNextMessageToWit(false);
      end
 rule "Se recibe descripcion del problema"
@@ -56,7 +56,7 @@ rule "No se encuentra cliente en Asigno"
     when $a:MessageResponse(context()=="request_customer_data")
          $b: Customer(!isInAsigno)
     then
-        $a.setResponse("No encontre la informacion con el correo proporcionado, por favor verifique el correo y vuelva a ingresarlo");
+        $a.setResponse("No encontre la información con el correo proporcionado, por favor verifique el correo y vuelva a ingresarlo");
      end
 rule "Cliente encontrado en asigno - Se tiene lo necesario para crear el ticket"
     when
@@ -65,6 +65,7 @@ rule "Cliente encontrado en asigno - Se tiene lo necesario para crear el ticket"
     then
         insert(new TicketCreated($a.createTicket()));
         $a.cleanConversation();
+        $a.setContext("request_summary");//prepare to next issue
      end
 rule "El ticket ha sido creado"
     when $a:MessageResponse(context()=="request_customer_data")
@@ -87,9 +88,14 @@ rule "No se recibe informacion correcta del cliente"
         $a.sendNextMessageToWit(true);
         $a.setResponse("Necesito que me proporciones el correo del cliente para continuar");
      end
+// Categoria default!
 rule "No se ha detectado problema"
     when $a:MessageResponse(intent!="thanks",intent!="bye",intent !="hello",intent!="send_description",intent=="", context()=="request_summary")
     then
-        $a.setResponse("Se levantara Ticket con categoria default");
-        $a.cleanConversation();
+        $a.setResponse("No pude reconocer el problema, sin embargo creare el Ticket, un Agente se encargara de realizar la clasificación\n" +
+         "Por favor ingresa la descripción del problema de forma detallada");
+         $a.setContext("request_description");
+         $a.classifyConversation();
+         $a.saveNotClassified();
+         $a.sendNextMessageToWit(false);
      end
