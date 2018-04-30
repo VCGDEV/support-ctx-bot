@@ -1,43 +1,162 @@
 [
   {
-    "tag":"hello",
-    "responses":["Hola {name} bienvenid@, en que puedo ayudarte?","Hola {name} que tal"],
-    "context":""
+    "tag":"network_vpn",
+    "mainCategoryId":"94",
+    "categoryId":"102"
   },
   {
-    "tag":"bye",
-    "responses":["Muy bien, hasta luego {name}","Adios {name}, esperemos que escribas pronto","Hasta luego"],
-    "context":""
+    "tag":"mail_training",
+    "mainCategoryId":"51",
+    "categoryId":"57"
   },
   {
-    "tag":"thanks",
-    "responses":["Es un placer","por nada","estoy para servirte :D","un placer atenderte"],
-    "context":""
+    "tag":"network_configuration",
+    "mainCategoryId":"94",
+    "categoryId":"57"
   },
   {
-    "tag":"send_description",
-    "responses":["Mi nombre es Luky y me pongo a tus ordenes para ayudarte a clasificar e ingresar tickets a nuestro sistema",
-    "Gracias por preguntar :D, mi nombre es Luky y tratare de clasificar los problemas que tengas e ingresarlas a nuestro sistema de tickets llamado: Asigno"],
-    "context":""
+    "tag":"network_internet",
+    "mainCategoryId":"94",
+    "categoryId":"100"
   },
   {
-    "tag":"printer_error",
-    "responses":["Muy bien procederemos a verificar el error de su impresora"],
-    "context":"printer"
+    "tag":"network_wireles",
+    "mainCategoryId":"94"
+    "categoryId":"103"
   },
   {
-    "tag":"pc_slow",
-    "responses":["En seguida verificaremos actualizaciones recientes y buscaremos virus en su computadora"],
-    "context":"pc_slow"
+    "tag":"mail_delete_account",
+    "mainCategoryId":"51",
+    "categoryId":"56"
   },
   {
-    "tag":"mail_error",
-    "responses":["Muy bien, procedere a verificar su cuenta de correo"],
-    "context":"mail_error"
+    "tag":"mail_configuration",
+    "mainCategoryId":"51",
+    "categoryId":"57"
   },
   {
-    "tag":"create_mail_box",
-    "responses":["Claro, agregare un ticket para  crear las cuentas de correo"],
-    "context":"create_mail"
+    "tag":"mail_create_account",
+    "mainCategoryId":"51",
+    "categoryId":"55"
+  },
+  {
+    "tag":"network_structured_cabling",
+    "mainCategoryId":"94",
+    "categoryId":"95"
+  },
+  {
+    "tag":"mail_password_change",
+    "mainCategoryId":"51",
+    "categoryId":"52"
+  },
+  {
+    "tag":"special_activity_inventory",
+    "mainCategoryId":"25",
+    "categoryId":"34"
+  },
+  {
+    "tag":"special_activity_preventive_maintenance",
+    "mainCategoryId":"25",
+    "categoryId":"32"
+  },
+  {
+    "tag":"special_activity_reinstall",
+    "mainCategoryId":"25",
+    "categoryId":"33"
+  },
+  {
+    "tag":"special_activity_change_equipment",
+    "mainCategoryId":"25",
+    "categoryId":"26"
+  },
+  {
+    "tag":"special_activity_quote",
+    "mainCategoryId":"25",
+    "categoryId":"27"
+  },
+  {
+    "tag":"special_activity_guarantee",
+    "mainCategoryId":"25",
+    "categoryId":"30"
+  },
+  {
+    "tag":"special_activity_install_equipment",
+    "mainCategoryId":"25",
+    "categoryId":"31"
+  },
+  {
+    "tag":"pc_officce",
+    "mainCategoryId":"28",
+    "categoryId":"83"
+  },
+  {
+    "tag":"pc_os",
+    "mainCategoryId":"28",
+    "categoryId":"85"
+  },
+  {
+    "tag":"pc_antivirus",
+    "mainCategoryId":"28",
+    "categoryId":"78"
+  },
+  {
+    "tag":"pc_hardware",
+    "mainCategoryId":"28",
+    "categoryId":"29"
+  },
+  {
+    "tag":"pc_printers",
+    "mainCategoryId":"28",
+    "categoryId":"80"
+  },
+  {
+    "tag":"pc_software",
+    "mainCategoryId":"28",
+    "categoryId":"86"
+  },
+  {
+    "tag":"servers_data_base",
+    "mainCategoryId":"104",
+    "categoryId":"105"
+  },
+  {
+    "tag":"servers_hardware",
+    "mainCategoryId":"104",
+    "categoryId":""
+  },
+  {
+    "tag":"server_os",
+    "mainCategoryId":"104",
+    "categoryId":"108"
+  },
+  {
+    "tag":"servers_software",
+    "mainCategoryId":"104",
+    "categoryId":"109"
+  },
+  {
+    "tag":"applications_documents_control",
+    "mainCategoryId":"35",
+    "categoryId":"36"
+  },
+  {
+    "tag":"applications_pos",
+    "mainCategoryId":"35",
+    "categoryId":"42"
+  },
+  {
+    "tag":"applications_erp",
+    "mainCategoryId":"35",
+    "categoryId":"38"
+  },
+  {
+    "tag":"providers_teleco",
+    "mainCategoryId":"89",
+    "categoryId":"93"
+  },
+  {
+    "tag":"telephony_configuration",
+    "mainCategoryId":"112",
+    "categoryId":"118"
   }
 ]

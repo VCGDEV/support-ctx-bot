@@ -1,61 +1,101 @@
 package org.vcgdev.supportctxbot
-import java.util.List
 import org.slf4j.Logger
 import kie.MessageResponse
-import kie.ConversationContext
-global List elegibleResponses
-global ConversationContext conversationContext
-rule "Hello intent"
+declare Customer
+    isInAsigno: Boolean
+end
+declare TicketCreated
+    isCreated: Boolean
+end
+rule "El usuario esta saludando"
     when $a:MessageResponse(intent=="hello")
     then
-        elegibleResponses.add("hello");
-        System.out.print("Current conversation context "+conversationContext);
+        $a.setResponse("Hola {name}, en que puedo ayudarte?");
+        $a.setContext("request_summary");
      end
-rule "Bye intent"
+rule "El usuario se despide del Bot"
     when $a:MessageResponse(intent=="bye")
     then
-        elegibleResponses.add("bye");
+        $a.setResponse("Hasta luego {name}!");
+        $a.setContext("");//clean context
      end
-rule "Request name intent"
+rule "El usuario esta solicitando la informacion del BOT"
     when $a:MessageResponse(intent=="send_description")
     then
-        elegibleResponses.add("send_name");
+        $a.setResponse("Gracias por preguntar {name}, mi nombre es Luky, y por el momento puedo ayudarte a clasificar el problema de soporte que tengas y guardarlo en el sistema Asigno!,\n\n Para continuar ingresa una breve descripción del problema");
+        $a.setContext("request_summary");
      end
-rule "Thanks intent"
+rule "El usuario agradece el servicio"
     when $a:MessageResponse(intent=="thanks")
     then
-        elegibleResponses.add("thanks");
+        $a.setResponse("Por nada, es un placer");
      end
-rule "PC is slow intent"
-    when $a:MessageResponse(intent=="pc_slow")
+rule "Se detecta el problema"
+    when $a:MessageResponse(intent!="thanks",intent!="bye",intent!="hello",intent!="send_description",intent!="")
     then
-        elegibleResponses.add("pc_slow");
-        conversationContext.setContext("Pc is really slow");
+        $a.setContext("request_description");
+        $a.classifyConversation();
+        $a.setResponse("{name}, Por favor ingresa la descripción completa del problema");
+        $a.sendNextMessageToWit(false);
      end
-rule "Printer error intent"
-    when $a:MessageResponse(intent=="printer_error")
+rule "Se recibe descripcion del problema"
+    when $a:MessageResponse(context()=="request_description")
     then
-        elegibleResponses.add("printer_error");
+        $a.setResponse("Cual es el correo del cliente al que se levantara el Ticket?");
+        $a.setContext("request_customer_data");
+        $a.setDescription();
+        $a.sendNextMessageToWit(true);
      end
-rule "Create mail box intent"
- when $a:MessageResponse(intent=="create_mail_box")
-  then
-    elegibleResponses.add("create_mail_box");
-  end
-rule "Intent inbox error"
-    when $a:MessageResponse(intent=="mail_error" && entities().contains("mail_folder_inbox"))
+rule "Se recibe informacion correcta del cliente"
+    when $a:MessageResponse(context()=="request_customer_data",containsEntity("email"))
     then
-        elegibleResponses.add("inbox_error");
+       $a.findCustomer($a.findFirstEntityValue("email"));
+       insert(new Customer(!$a.isCustomerNull()));
      end
-rule "Intent outbox error"
-    when $a:MessageResponse(intent=="mail_error" && entities().contains("mail_folder_outbox"))
+rule "No se encuentra cliente en Asigno"
+    when $a:MessageResponse(context()=="request_customer_data")
+         $b: Customer(!isInAsigno)
     then
-        elegibleResponses.add("mail_outbox");
-      end
-rule "Intent mail error unknow box"
-    when $a:MessageResponse(intent=="mail_error",!entities().contains("mail_folder_outbox"),!entities().contains("mail_folder_inbox"))
-    then
-        elegibleResponses.add("mail_unknow_box");
+        $a.setResponse("No encontre la información con el correo proporcionado, por favor verifique el correo y vuelva a ingresarlo");
      end
-
-
+rule "Cliente encontrado en asigno - Se tiene lo necesario para crear el ticket"
+    when
+        $a:MessageResponse(context()=="request_customer_data")
+        $b:Customer(isInAsigno)
+    then
+        insert(new TicketCreated($a.createTicket()));
+        $a.cleanConversation();
+        $a.setContext("request_summary");//prepare to next issue
+     end
+rule "El ticket ha sido creado"
+    when $a:MessageResponse(context()=="request_customer_data")
+        $b: TicketCreated(isCreated)
+        $c:Customer(isInAsigno)
+    then
+        $a.setResponse("Gracias el ticket fue creado exitosamente");
+     end
+rule "El ticket no se creo en asigno"
+    when $a:MessageResponse(context()=="request_customer_data")
+        $b: TicketCreated(!isCreated)
+        $c:Customer(isInAsigno)
+    then
+        $a.setResponse("No fue posible crear el Ticket");
+     end
+rule "No se recibe informacion correcta del cliente"
+    when $a:MessageResponse(context()=="request_customer_data",!containsEntity("email"))
+    then
+        $a.setContext("request_customer_data");
+        $a.sendNextMessageToWit(true);
+        $a.setResponse("Necesito que me proporciones el correo del cliente para continuar");
+     end
+// Categoria default!
+rule "No se ha detectado problema"
+    when $a:MessageResponse(intent!="thanks",intent!="bye",intent !="hello",intent!="send_description",intent=="", context()=="request_summary")
+    then
+        $a.setResponse("No pude reconocer el problema, sin embargo creare el Ticket, un Agente se encargara de realizar la clasificación\n" +
+         "Por favor ingresa la descripción del problema de forma detallada");
+         $a.setContext("request_description");
+         $a.classifyConversation();
+         $a.saveNotClassified();
+         $a.sendNextMessageToWit(false);
+     end

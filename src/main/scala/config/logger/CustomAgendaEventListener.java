@@ -1,8 +1,5 @@
 package config.logger;
 
-
-import org.drools.definition.rule.Rule;
-import org.drools.event.rule.*;
 import org.kie.api.event.rule.AfterMatchFiredEvent;
 import org.kie.api.event.rule.AgendaGroupPoppedEvent;
 import org.kie.api.event.rule.AgendaGroupPushedEvent;
@@ -14,6 +11,12 @@ import org.kie.api.event.rule.RuleFlowGroupDeactivatedEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+
+/**
+ * @author Victor de la Cruz
+ * @version 1.0.0
+ * Class to visualize rules activation for Rule Engine Processor
+ * */
 public class CustomAgendaEventListener implements org.kie.api.event.rule.AgendaEventListener {
 
     private final Logger logger = LoggerFactory.getLogger(CustomAgendaEventListener.class);
