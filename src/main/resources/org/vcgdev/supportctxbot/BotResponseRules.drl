@@ -1,6 +1,12 @@
 package org.vcgdev.supportctxbot
 import org.slf4j.Logger
 import kie.MessageResponse
+declare Customer
+    isInAsigno: Boolean
+end
+declare TicketCreated
+    isCreated: Boolean
+end
 rule "El usuario esta saludando"
     when $a:MessageResponse(intent=="hello")
     then
@@ -37,13 +43,42 @@ rule "Se recibe descripcion del problema"
     then
         $a.setResponse("Cual es el correo del cliente al que se levantara el Ticket?");
         $a.setContext("request_customer_data");
+        $a.setDescription();
         $a.sendNextMessageToWit(true);
      end
 rule "Se recibe informacion correcta del cliente"
     when $a:MessageResponse(context()=="request_customer_data",containsEntity("email"))
     then
-        $a.setResponse("Gracias, procederemos a crear el ticket");
+       $a.findCustomer($a.findFirstEntityValue("email"));
+       insert(new Customer(!$a.isCustomerNull()));
+     end
+rule "No se encuentra cliente en Asigno"
+    when $a:MessageResponse(context()=="request_customer_data")
+         $b: Customer(!isInAsigno)
+    then
+        $a.setResponse("No encontre la informacion con el correo proporcionado, por favor verifique el correo y vuelva a ingresarlo");
+     end
+rule "Cliente encontrado en asigno - Se tiene lo necesario para crear el ticket"
+    when
+        $a:MessageResponse(context()=="request_customer_data")
+        $b:Customer(isInAsigno)
+    then
+        insert(new TicketCreated($a.createTicket()));
         $a.cleanConversation();
+     end
+rule "El ticket ha sido creado"
+    when $a:MessageResponse(context()=="request_customer_data")
+        $b: TicketCreated(isCreated)
+        $c:Customer(isInAsigno)
+    then
+        $a.setResponse("Gracias el ticket fue creado exitosamente");
+     end
+rule "El ticket no se creo en asigno"
+    when $a:MessageResponse(context()=="request_customer_data")
+        $b: TicketCreated(!isCreated)
+        $c:Customer(isInAsigno)
+    then
+        $a.setResponse("No fue posible crear el Ticket");
      end
 rule "No se recibe informacion correcta del cliente"
     when $a:MessageResponse(context()=="request_customer_data",!containsEntity("email"))

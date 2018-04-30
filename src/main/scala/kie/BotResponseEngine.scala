@@ -1,7 +1,4 @@
 package kie
-
-import java.sql.Date
-
 import bot.{IntentClassification}
 import com.typesafe.scalalogging.Logger
 import config.logger.CustomAgendaEventListener
@@ -25,7 +22,7 @@ object BotResponseEngine {
     * */
   def determineBotResponse(process:MessageResponse): String = {
     val session = Kie.newSession
-    logger.info(s"Sending data to rule engine - ConversationContext: ${process.conversation.currentContext}")
+    logger.info(s"Sending data to rule engine - context: ${process.conversation.currentContext}")
     val classFind = classifications.find(c => c.tag == process.intent)
     if(classFind.isDefined)
       process.setClassification(classFind.get)
@@ -33,7 +30,7 @@ object BotResponseEngine {
     session.addEventListener(new CustomAgendaEventListener())
     session.fireAllRules()
     //update conversation with new values
-    val conversation:Conversation = process.conversation// Conversation(process.chatId,process.context,process.sendNextToWit, new Date(new java.util.Date().getTime))
+    val conversation:Conversation = process.conversation
     ConversationDao.update(conversation)
     process.responseString
   }
