@@ -4,10 +4,10 @@ import java.util.Date
 
 import asigno._
 import bot.IntentClassification
+import mail.MailService
 import net.liftweb.json.DefaultFormats
 import repository.model.{Conversation, IssueNotClassified, IssueNotClassifiedDao}
 import wit.WitIntent
-import net.liftweb.json._
 import net.liftweb.json.Serialization.write
 
 import scala.beans.BeanInfo
@@ -16,13 +16,17 @@ class BotFacts {
 
 }
 
+case class Customer(isInAsigno:Boolean)
+case class TicketCreated(isCreated:Boolean,folio:String)
+case class CommentCreated(isCreated:Boolean)
 /**
   * @author Victor de la Cruz
   * @version 1.0.0
   * Class definition to manage intent and the entities to process in rule engine
   * */
 @BeanInfo
-case class MessageResponse(var intent:String,var entities:Map[String,List[WitIntent]],var conversation:Conversation, val message:String,val chatId:Long) extends BotFact{
+case class MessageResponse(var intent:String,var entities:Map[String,List[WitIntent]],var conversation:Conversation, val message:String,val chatId:Long,
+                           val commentView: CommentView) extends BotFact{
   var responseString:String = ""
   var classification:IntentClassification = null
   var customerView:CustomerView=null
@@ -50,6 +54,7 @@ case class MessageResponse(var intent:String,var entities:Map[String,List[WitInt
     this.conversation.category = ""
     this.conversation.subcategory = ""
     this.conversation.customer = ""
+    this.conversation.ticketId = ""
   }
   def findFirstEntityValue(key:String) : String = {
     if(this.entities.contains(key)){
@@ -70,10 +75,14 @@ case class MessageResponse(var intent:String,var entities:Map[String,List[WitInt
     this.customerView == null
   }
 
+  //2 productivo
+  //28 pruebas
   def createTicket():String = {
     val ticket = Ticket(new Date().getTime,customerData(),List(),TicketType(28),
       TicketCategory(conversation.subcategory,conversation.category),conversation.summary,conversation.description)
-    AsignoRestClient.createTicket(ticket)
+    val ticketId = AsignoRestClient.createTicket(ticket)
+    conversation.ticketId = ticketId
+    ticketId
   }
 
   def customerData():CustomerData = {
@@ -100,4 +109,14 @@ case class MessageResponse(var intent:String,var entities:Map[String,List[WitInt
     IssueNotClassifiedDao.save(issue)
   }
 
+  def sendNotClassifiedMail(): Unit ={
+    val mailService = new MailService
+    mailService.sendMail(List("vcruz@amentum.net"),"Elemento sin clasificar",message)
+  }
+
+  def sendComment():Boolean = {
+    AsignoRestClient.sendComment(conversation.ticketId,commentView)
+  }
+
+  def hasAttachments():Boolean = this.commentView.attachments.size>0
 }

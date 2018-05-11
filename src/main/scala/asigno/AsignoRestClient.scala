@@ -6,7 +6,6 @@ import com.stackmob.newman.ApacheHttpClient
 import com.stackmob.newman.dsl.{GET, _}
 import com.stackmob.newman.response.HttpResponseCode
 import com.typesafe.config.{Config, ConfigFactory}
-import com.typesafe.scalalogging.Logger
 import config.oauth.OauthFactory
 import net.liftweb.json.{DefaultFormats, MappingException, parse}
 import org.apache.http.client.utils.URIBuilder
@@ -17,7 +16,7 @@ import scala.concurrent.duration._
 object AsignoRestClient {
   val conf: Config = ConfigFactory.load
   lazy val urlEndPoint = conf.getString("application.rest.base.url")
-  val logger = Logger(LoggerFactory.getLogger(AsignoRestClient.getClass))
+  val logger = LoggerFactory.getLogger(AsignoRestClient.getClass)
   implicit val formats: DefaultFormats.type = net.liftweb.json.DefaultFormats
   implicit val httpClient: ApacheHttpClient = new ApacheHttpClient()
   def getCustomerByEmail(email:String):CustomerView = {
@@ -54,5 +53,19 @@ object AsignoRestClient {
       response.bodyString
     else
       ""
+  }
+
+  def sendComment(ticketId:String,commentView: CommentView):Boolean = {
+    logger.info(s"Agregar comentario a Ticket")
+    val uri = s"$urlEndPoint/tickets/$ticketId/comments"
+    val response = Await.result(
+    POST(new URL(uri))
+    .setBody(commentView)
+    .addHeaders("Authorization" -> s"${OauthFactory.credentials().token_type} ${OauthFactory.credentials().access_token}")
+    .addHeaders("Content-Type"->"application/json")
+    .apply
+    ,20.second)
+    logger.info(s"Response code: ${response.code} - body ${response.bodyString}")
+    response.code == HttpResponseCode.Ok
   }
 }

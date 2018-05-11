@@ -1,7 +1,7 @@
 package kie
-import bot.{IntentClassification}
-import com.typesafe.scalalogging.Logger
+import bot.IntentClassification
 import config.logger.CustomAgendaEventListener
+import mail.MailService
 import org.slf4j.LoggerFactory
 import repository.model.{Conversation, ConversationDao}
 
@@ -13,9 +13,9 @@ import net.liftweb.json.{DefaultFormats, parse}
   * Object definition to fire rules
   * */
 object BotResponseEngine {
-  val logger = Logger(LoggerFactory.getLogger(BotResponseEngine.getClass))
+  val logger = LoggerFactory.getLogger(BotResponseEngine.getClass)
   val classifications = loadIntentClassifications()
-
+  val mailService = new MailService
   /**
     *  Fire rules to obtain bot response
     *  @param process the response to process in the rules
@@ -29,10 +29,12 @@ object BotResponseEngine {
     session.insert(process)
     session.addEventListener(new CustomAgendaEventListener())
     session.fireAllRules()
+    session.dispose()
     //update conversation with new values
     val conversation:Conversation = process.conversation
     ConversationDao.update(conversation)
     process.responseString
+
   }
 
   def loadIntentClassifications():List[IntentClassification] = {

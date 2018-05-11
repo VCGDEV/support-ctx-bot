@@ -4,7 +4,6 @@ import com.stackmob.newman.ApacheHttpClient
 import com.stackmob.newman.dsl.{POST, _}
 import com.stackmob.newman.response.HttpResponseCode
 import com.typesafe.config.{Config, ConfigFactory}
-import com.typesafe.scalalogging.Logger
 import net.liftweb.json._
 import org.apache.http.client.utils.URIBuilder
 import org.slf4j.LoggerFactory
@@ -36,7 +35,7 @@ object OauthFactory{
   lazy val oauthServerUrl:String = conf.getString("application.oauth.url")
   lazy val oauthGrantType:String = conf.getString("application.oauth.grant")
   private var _credentials : OauthCredentials = null
-  val logger = Logger(LoggerFactory.getLogger(OauthFactory.getClass))
+  val logger = LoggerFactory.getLogger(OauthFactory.getClass)
 
   /**
     * Method to send a request to <strong>security</strong> microservice and login into app

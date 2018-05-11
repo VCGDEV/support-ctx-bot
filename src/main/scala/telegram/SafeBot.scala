@@ -3,7 +3,6 @@ package telegram
 import java.sql.Timestamp
 import java.util.{Date, UUID}
 
-import com.typesafe.scalalogging.Logger
 import config.oauth.OauthFactory
 import info.mukel.telegrambot4s.api.declarative.Commands
 import info.mukel.telegrambot4s.api.{Polling, TelegramBot}
@@ -20,12 +19,15 @@ import akka.http.scaladsl.Http
 import akka.http.scaladsl.model.{HttpRequest, Uri}
 import akka.http.scaladsl.unmarshalling.Unmarshal
 import akka.util.ByteString
+import asigno.{AttachmentView, CommentView}
 import google.GoogleSpeechRecognition
 import info.mukel.telegrambot4s.models.Message
 import kie.{BotResponseEngine, MessageResponse}
+import org.apache.commons.codec.binary.Base64
 import repository.model.{Conversation, ConversationDao}
 
-import scala.concurrent.Future
+import scala.concurrent.{Await, Future}
+import scala.concurrent.duration._
 import scala.util.Random
 
 /**
@@ -42,13 +44,14 @@ object SafeBot extends TelegramBot with Polling with Commands {
     .getOrElse(Source.fromInputStream(getClass.getResourceAsStream("/bot.token")).getLines().mkString)
   implicit val formats: DefaultFormats.type = net.liftweb.json.DefaultFormats
   val ignoredWords:Seq[String] = Seq("/start","/credentials","/clean")
-  override val logger = Logger(LoggerFactory.getLogger(SafeBot.getClass))
+  val LOG = LoggerFactory.getLogger(SafeBot.getClass)
   val db = slick.jdbc.JdbcBackend.Database.forConfig("db.config")
 
   /**
     * Process <strong>/start</strong> command from telegram
     * */
   onCommand('start) { implicit msg => reply("Bienvenido, Mi nombre es Luky y soy un Bot de soporte tecnico, En que puedo ayudarte?!!!") }
+
 
   /**
     * Process <strong>/credentials</strong> command from telegram
@@ -60,12 +63,12 @@ object SafeBot extends TelegramBot with Polling with Commands {
       case Success(s)=>
         s match {
           case Some(c)=>
-            c.summary = "request_summary"
+            c.summary = ""
             c.category = ""
             c.subcategory = ""
             c.description = ""
             c.sendToNlpNext = true
-            c.currentContext = ""
+            c.currentContext = "request_summary"
             ConversationDao.update(c)
             reply("Proceso cancelado exitosamente")
           case None=>
@@ -88,22 +91,22 @@ object SafeBot extends TelegramBot with Polling with Commands {
           case Some(c)=>
             processMessage(msg,c)
           case None=>
-            logger.info("Create new conversation for telegram chat")
+            LOG.info("Create new conversation for telegram chat")
             val conversation:Conversation = new Conversation(msg.chat.id,"",true,
-              new Timestamp(new Date().getTime),"","","","","")
+              new Timestamp(new Date().getTime),"","","","","","")
             ConversationDao.create(conversation)
                 .onComplete{
                   case Success(c)=>
-                    logger.info(s"New conversation was created ${c.chatId}")
+                    LOG.info(s"New conversation was created ${c.chatId}")
                   case Failure(e)=>
-                    logger.error(s"Cant create new conversation ${e}")
+                    LOG.error(s"Cant create new conversation ${e}")
                 }
             processMessage(msg, conversation)
         }
       case Failure(f)=>
-        logger.error("Error al obtener conversacion",f)
+        LOG.error("Error al obtener conversacion",f)
         val conversation:Conversation = new Conversation(msg.chat.id,"",true,
-          new Timestamp(new Date().getTime),"","","","","")
+          new Timestamp(new Date().getTime),"","","","","","")
         processMessage(msg, conversation)
     }
     MDC.remove("UUID")
@@ -112,40 +115,118 @@ object SafeBot extends TelegramBot with Polling with Commands {
 
   def processMessage(implicit msg:Message,conversation:Conversation): Unit ={
     val name = msg.from.get.firstName
-    logger.info(s"Send response to user: $name ")
     msg.voice match {
       case Some(voice) =>
-        logger.info(s"Download Telegram voice record ${voice.fileId}")
+        LOG.info(s"Download Telegram voice record ${voice.fileId}")
         downloadFile(voice.fileId).onComplete{
           case Success(bytes)=>
-            reply(getUserIntent(GoogleSpeechRecognition.recognizeSpeech(bytes),msg.chat.id,name,conversation))
-          case Failure(t)=>logger.error(s"Error trying to download audio from telegram ${t}")
+            val caption = msg.caption match {
+              case Some(c)=>c
+              case None => "Evidencia"
+            }
+            val comment:CommentView = CommentView(caption,OauthFactory.name,OauthFactory.username,"",getFilesFromMessage)
+            reply(getUserIntent(GoogleSpeechRecognition.recognizeSpeech(bytes),msg.chat.id,name,conversation,comment))
+          case Failure(t)=>LOG.error(s"Error trying to download audio from telegram ${t}")
         }
       case None =>
         msg.text match {
           case Some(text) =>
-            if(!text.isEmpty && !ignoredWords.contains(text))
-              reply(getUserIntent(text,msg.chat.id,name,conversation))
-          case None => logger.error("Message without voice and text")
+            if(!text.isEmpty && !ignoredWords.contains(text)){
+              val caption = msg.caption match {
+                case Some(c)=>c
+                case None => "Evidencia"
+              }
+              val comment:CommentView = CommentView(caption,OauthFactory.name,OauthFactory.username,"",getFilesFromMessage)
+              reply(getUserIntent(text,msg.chat.id,name,conversation,comment))
+            }
+          case None =>
+            if(conversation.currentContext.equals("wait_evidence")){
+              val caption = msg.caption match {
+                case Some(c)=>c
+                case None => "Evidencia"
+              }
+              val comment:CommentView = CommentView(caption,OauthFactory.name,OauthFactory.username,"",getFilesFromMessage)
+              reply(getUserIntent("",msg.chat.id,name,conversation,comment))
+            }
         }
     }
   }
+
+  def downloadAttachment(fileId:String,fileName:String,mimeType:String):List[AttachmentView] = {
+    try{
+      val res = Await.result(downloadFile(fileId),20.second)
+      List(AttachmentView(fileName,Base64.encodeBase64String(res.toArray),mimeType))
+    }catch {
+      case e: Exception => LOG.error("Error on file download")
+        List()
+    }
+  }
+
+  def getFilesFromMessage(implicit msg:Message):List[AttachmentView] = {
+    var attachments = List[AttachmentView]()
+    msg.document match {
+      case Some(document) =>
+        val fileName = getValue(document.fileName)
+        val mimeType = getValue(document.mimeType)
+        attachments = attachments ::: downloadAttachment(document.fileId,fileName,mimeType)
+      case None => LOG.info("Message has no documents")
+    }
+    msg.video match {
+      case Some(video) =>
+        val fileName = "video_note"
+        val mimeType = getValue(video.mimeType)
+        attachments = attachments ::: downloadAttachment(video.fileId,fileName,mimeType)
+      case None => LOG.info("Message has no video")
+    }
+    msg.audio match {
+      case Some(audio)=>
+        val fileName = "audio"
+        val mimeType = getValue(audio.mimeType)
+        attachments = attachments ::: downloadAttachment(audio.fileId,fileName,mimeType)
+      case None => LOG.info("Message has no audio")
+    }
+    msg.voice match {
+      case Some(voice)=>
+        val fileName = "voice"
+        val mimeType = getValue(voice.mimeType)
+        attachments = attachments ::: downloadAttachment(voice.fileId,fileName,mimeType)
+      case None => LOG.info("Message has no voice")
+    }
+    msg.photo match {
+      case Some(pics)=>
+        val p = pics(pics.size -1)
+        val fileName = p.fileId+".jpeg"
+        val mimeType ="image/jpeg"
+        attachments = attachments ::: downloadAttachment(p.fileId,fileName,mimeType);
+      case None => LOG.info("Message has no images")
+    }
+    LOG.info(s"Attachments in message: ${attachments.size}")
+    attachments
+  }
+
+  def getValue(option:Option[String]):String = {
+    option match {
+      case Some(value)=>value
+      case None => ""
+    }
+  }
+
   /**
     *  Determine user intent and get the correct response
     *  @param chatId unique chat ID from telegram
     *  @param msgText the message to process using an NLP to determine the intent
     *  @return Message to send as response to user
     * */
-  def getUserIntent(msgText:String,chatId:Long,name:String,conversation:Conversation): String ={
-    logger.info(s"Get user intent ${msgText}")
+  def getUserIntent(msgText:String,chatId:Long,name:String,conversation:Conversation,
+                    commentView: CommentView): String ={
+    LOG.info(s"Get user intent ${msgText}")
     var reply:String = ""
     if(!ignoredWords.contains(msgText)){
-      val messageResponse = MessageResponse("", Map(),conversation,msgText,chatId)
+      val messageResponse = MessageResponse("", Map(),conversation,msgText,chatId,commentView)
       if(conversation.sendToNlpNext){//enviar a wit.ai
         val witResponse = WitAiProcessor.getIntents(msgText)
-        logger.info(s"${witResponse}")
+        LOG.info(s"${witResponse}")
         messageResponse.entities = witResponse.entities.filterKeys(!_.equals("intent"))
-        logger.info(s"$witResponse")
         val intent = witResponse.entities.get("intent")
         intent match {
           case Some(witIntents) =>
@@ -172,11 +253,11 @@ object SafeBot extends TelegramBot with Polling with Commands {
     return request(GetFile(fileId)).flatMap(s=>
       s.filePath match {
         case Some(filePath) =>
-          val url:String = s"https://api.telegram.org/file/bot$token/$filePath"
+          val request = HttpRequest(uri=Uri(s"https://api.telegram.org/file/bot$token/$filePath"))
           for{
-            res <- Http().singleRequest(HttpRequest(uri=Uri(url)))
+            res <- Http().singleRequest(request)
             if res.status.isSuccess()
-            bytes <- Unmarshal(res).to[ByteString]
+              bytes <- Unmarshal(res).to[ByteString]
           } yield bytes
         case None => throw new Exception("No file was found")
       }

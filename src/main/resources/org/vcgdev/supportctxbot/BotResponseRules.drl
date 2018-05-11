@@ -1,38 +1,35 @@
 package org.vcgdev.supportctxbot
-import org.slf4j.Logger
-import kie.MessageResponse
-declare Customer
-    isInAsigno: Boolean
-end
-declare TicketCreated
-    isCreated: Boolean
-    folio: String
-end
+
+import kie.MessageResponse;
+import kie.Customer;
+import kie.TicketCreated;
+import kie.CommentCreated;
+
 rule "El usuario esta saludando"
-    when $a:MessageResponse(intent=="hello")
+    when $a:MessageResponse(intent()=="hello")
     then
         $a.setResponse("Hola {name}, en que puedo ayudarte?");
         $a.setContext("request_summary");
      end
 rule "El usuario se despide del Bot"
-    when $a:MessageResponse(intent=="bye")
+    when $a:MessageResponse(intent()=="bye")
     then
         $a.setResponse("Hasta luego {name}!");
         $a.setContext("");//clean context
      end
 rule "El usuario esta solicitando la informacion del BOT"
-    when $a:MessageResponse(intent=="send_description")
+    when $a:MessageResponse(intent()=="send_description")
     then
         $a.setResponse("Gracias por preguntar {name}, mi nombre es Luky, y por el momento puedo ayudarte a clasificar el problema de soporte que tengas y guardarlo en el sistema Asigno!,\n\n Para continuar ingresa una breve descripción del problema");
         $a.setContext("request_summary");
      end
 rule "El usuario agradece el servicio"
-    when $a:MessageResponse(intent=="thanks")
+    when $a:MessageResponse(intent()=="thanks")
     then
         $a.setResponse("Por nada, es un placer");
      end
 rule "Se detecta el problema"
-    when $a:MessageResponse(intent!="thanks",intent!="bye",intent!="hello",intent!="send_description",intent!="")
+    when $a:MessageResponse(intent()!="thanks",intent()!="bye",intent()!="hello",intent()!="send_description",intent()!="")
     then
         $a.setContext("request_description");
         $a.classifyConversation();
@@ -55,35 +52,84 @@ rule "Se recibe informacion correcta del cliente"
      end
 rule "No se encuentra cliente en Asigno"
     when $a:MessageResponse(context()=="request_customer_data")
-         $b: Customer(!isInAsigno)
+         $b: Customer(!isInAsigno())
     then
         $a.setResponse("No encontre la información con el correo proporcionado, por favor verifique el correo y vuelva a ingresarlo");
      end
 rule "Cliente encontrado en asigno - Se tiene lo necesario para crear el ticket"
     when
         $a:MessageResponse(context()=="request_customer_data")
-        $b:Customer(isInAsigno)
+        $b:Customer(isInAsigno())
     then
         String createTicket = $a.createTicket();
         insert(new TicketCreated(!createTicket.isEmpty(),createTicket));
-        $a.cleanConversation();
-        $a.setContext("request_summary");//prepare to next issue
      end
 rule "El ticket ha sido creado"
     when $a:MessageResponse(context()=="request_customer_data")
-        $b: TicketCreated(isCreated)
-        $c:Customer(isInAsigno)
+        $b: TicketCreated(isCreated())
+        $c:Customer(isInAsigno())
     then
         $a.setResponse("El ticket fue creado exitosamente, puede consultar la informacion en:" +
-         "\n http://192.168.20.233/#tickets/details/"+$b.getFolio());
+         "\n http://192.168.20.233/#tickets/details/"+$b.folio()+"\n\nDeseas agregar evidencia a este Ticket?");
+         $a.setContext("request_evidence");
      end
 rule "El ticket no se creo en asigno"
     when $a:MessageResponse(context()=="request_customer_data")
-        $b: TicketCreated(!isCreated)
-        $c:Customer(isInAsigno)
+        $b: TicketCreated(!isCreated())
+        $c:Customer(isInAsigno())
     then
+        $a.cleanConversation();
         $a.setResponse("No fue posible crear el Ticket");
      end
+rule "Se desea enviar evidencia"
+    when
+        $a:MessageResponse(context()=="request_evidence",findFirstEntityValue("no_context_intent")=="positive_answer")
+        then
+         $a.setResponse("Muy bien por favor, envia una imagen un archivo para agregarlo al Ticket recien creador");
+         $a.setContext("wait_evidence");
+         $a.sendNextMessageToWit(false);//se espera contenido en forma de bytes, no se debe enviar a wit
+         end
+rule "Se recibe evidencia"
+    when $a:MessageResponse(context()=="wait_evidence",hasAttachments())
+    then
+        insert(new CommentCreated($a.sendComment()));
+     end
+rule "Se anexa comentario exitosamente"
+    when
+        $a:MessageResponse(context()=="wait_evidence")
+        $b:CommentCreated(isCreated())
+    then
+        $a.setResponse("Se ha enviado la evidencia de forma exitosa");
+        $a.cleanConversation();
+        $a.sendNextMessageToWit(true);
+        $a.setContext("request_summary");
+     end
+rule "No fue posible agregar comentario"
+    when
+        $a:MessageResponse(context()=="wait_evidence")
+        $b:CommentCreated(!isCreated())
+    then
+        $a.setResponse("Lo siento no pude agregar la evidencia, intenta nuevamente");
+     end
+rule "No se recibe evidencia"
+    when $a:MessageResponse(context()=="wait_evidence",!hasAttachments())
+        then
+            $a.setResponse("No se recibio la evidencia, intente nuevamente");
+         end
+rule "No se desea enviar evidencia"
+    when
+        $a:MessageResponse(context()=="request_evidence",findFirstEntityValue("no_context_intent")=="negative_answer")
+        then
+         $a.setResponse("Muy bien gracias");
+         $a.cleanConversation();
+         end
+rule "No se recibe respuesta positiva ni negativa"
+    when
+        $a:MessageResponse(context()=="request_evidence",findFirstEntityValue("no_context_intent")!="positive_answer",findFirstEntityValue("no_context_intent")!="negative_answer")
+        then
+         $a.setResponse("No pude procesar su respuesta, desea agregar evidencia  al Ticket?");
+         $a.cleanConversation();
+         end
 rule "No se recibe informacion correcta del cliente"
     when $a:MessageResponse(context()=="request_customer_data",!containsEntity("email"))
     then
@@ -93,12 +139,13 @@ rule "No se recibe informacion correcta del cliente"
      end
 // Categoria default!
 rule "No se ha detectado problema"
-    when $a:MessageResponse(intent!="thanks",intent!="bye",intent !="hello",intent!="send_description",intent=="", context()=="request_summary")
+    when $a:MessageResponse(intent()!="thanks",intent()!="bye",intent !="hello",intent()!="send_description",intent()=="", context()=="request_summary")
     then
         $a.setResponse("No pude reconocer el problema, sin embargo creare el Ticket, un Agente se encargara de realizar la clasificación\n" +
          "Por favor ingresa la descripción del problema de forma detallada");
          $a.setContext("request_description");
          $a.classifyConversation();
          $a.saveNotClassified();
+         //$a.sendNotClassifiedMail();
          $a.sendNextMessageToWit(false);
      end
