@@ -4,7 +4,7 @@ lazy val root = (project in file(".")).
     inThisBuild(List(
       organization := "com.example",
       scalaVersion := "2.11.7",
-      version      := "0.0.2-SNAPSHOT"
+      version      := "0.0.3-SNAPSHOT"
     )),
     name := "support-ctx-bot",
     libraryDependencies += scalaTest % Test
@@ -27,14 +27,18 @@ libraryDependencies ++= {
     List("drools-compiler", "drools-core", "drools-jsr94", "drools-decisiontables", "knowledge-api")
       .map("org.drools" % _ % droolsVersion)
 }
-
+val bananaV = "0.8.1"
 libraryDependencies ++= Seq(
   "org.slf4j" % "slf4j-api" % "1.7.5",
 "com.typesafe.slick" %% "slick" % "3.2.3",
 "org.postgresql" % "postgresql" % "9.4.1212",
 "com.h2database" % "h2" % "1.4.196" % "test",
 "com.typesafe.slick" %% "slick-hikaricp" % "3.2.3",
-  "javax.mail" % "mail" % "1.4"
+  "javax.mail" % "mail" % "1.4",
+  "org.w3" %% "banana-rdf" % bananaV,
+  "org.w3" %% "banana-jena" % bananaV,
+  "org.w3" %% "banana-sesame" % bananaV,
+  "org.w3" %% "banana-plantain" % bananaV,
 )
 assemblyMergeStrategy in assembly := {
   case PathList("javax", "servlet", xs @ _*)         => MergeStrategy.first
