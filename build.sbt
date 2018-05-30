@@ -4,7 +4,7 @@ lazy val root = (project in file(".")).
     inThisBuild(List(
       organization := "com.example",
       scalaVersion := "2.11.7",
-      version      := "0.0.3-SNAPSHOT"
+      version      := "0.1.0-SNAPSHOT"
     )),
     name := "support-ctx-bot",
     libraryDependencies += scalaTest % Test
@@ -17,7 +17,7 @@ resolvers ++= Seq(Resolver.sonatypeRepo("releases"),
 libraryDependencies += "io.megam" %% "newman" % "1.3.12"
 libraryDependencies += "com.typesafe" % "config" % "1.2.1"
 libraryDependencies += "net.liftweb" %% "lift-json" % "2.6-M4"
-libraryDependencies += "ch.qos.logback" % "logback-classic" % "1.2.3"
+//libraryDependencies += "ch.qos.logback" % "logback-classic" % "1.2.3"
 val droolsVersion = "6.1.0.Final"
 
 resolvers += "JBoss public" at "http://repository.jboss.org/nexus/content/groups/public/"
@@ -30,15 +30,16 @@ libraryDependencies ++= {
 val bananaV = "0.8.1"
 libraryDependencies ++= Seq(
   "org.slf4j" % "slf4j-api" % "1.7.5",
-"com.typesafe.slick" %% "slick" % "3.2.3",
-"org.postgresql" % "postgresql" % "9.4.1212",
-"com.h2database" % "h2" % "1.4.196" % "test",
-"com.typesafe.slick" %% "slick-hikaricp" % "3.2.3",
+  "com.typesafe.slick" %% "slick" % "3.2.3",
+  "org.postgresql" % "postgresql" % "9.4.1212",
+  "com.h2database" % "h2" % "1.4.196" % "test",
+  "com.typesafe.slick" %% "slick-hikaricp" % "3.2.3",
   "javax.mail" % "mail" % "1.4",
   "org.w3" %% "banana-rdf" % bananaV,
   "org.w3" %% "banana-jena" % bananaV,
   "org.w3" %% "banana-sesame" % bananaV,
   "org.w3" %% "banana-plantain" % bananaV,
+  "com.typesafe.scala-logging" %% "scala-logging" % "3.9.0"
 )
 assemblyMergeStrategy in assembly := {
   case PathList("javax", "servlet", xs @ _*)         => MergeStrategy.first
