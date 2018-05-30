@@ -1,8 +1,8 @@
 package repository.model
 
-import java.sql.Date
+import java.sql.{Date, Timestamp}
 
-case class ConversationHistory(historyId:Long,intent:String,message:String,from:String,to:String,createdDate:Date,chatId:Long)
+case class ConversationHistory(historyId:Long, intent:String, message:String, from:String, to:String, createdDate:Timestamp, chatId:Long)
 
 import slick.jdbc.PostgresProfile.api._
 import slick.lifted.ProvenShape
@@ -12,7 +12,7 @@ class ConversationHistoryTable(tag:Tag) extends Table[ConversationHistory](tag,"
   def message = column[String]("conversation_message")
   def from = column[String]("from")
   def to = column[String]("to")
-  def createdDate = column[Date]("created_date")
+  def createdDate = column[Timestamp]("created_date")
   def chatId = column[Long]("chat_id")
 
   override def * : ProvenShape[ConversationHistory]  = (historyId,intent,message,from,to,createdDate,chatId) <> (ConversationHistory.tupled,ConversationHistory.unapply)

@@ -51,8 +51,9 @@ class AsignoKnowledgeManager[Rdf <: RDF](implicit
     ).toList
   }
 
-  //construct graph from sparql endpoint
-  def selectUsers(): List[User] = {
+
+  //this has to be the only harcoded query, construct graph after this and navigate according to user issue
+  def getUser(id:String):Option[User] = {
     val query = parseConstruct(s"$defaultPrefixes CONSTRUCT {" +
       "?individual ?p ?o " +
       "} WHERE {"  +
@@ -62,7 +63,7 @@ class AsignoKnowledgeManager[Rdf <: RDF](implicit
       "?individual ?p ?o .}").get
     val resultGraph = SPARQLEndpoint.executeConstruct(query).get
     //extrat data from graph using asigno IRI
-    resultGraph.triples.collect{
+    val users:List[User]=resultGraph.triples.collect{
       case Triple(user,rdf.`type`,asigno.Customer) =>
         val pg = PointedGraph(user, resultGraph)
         pg.as[User].toOption
@@ -70,6 +71,7 @@ class AsignoKnowledgeManager[Rdf <: RDF](implicit
         val pg = PointedGraph(user,resultGraph)
         pg.as[User].toOption
     }.flatten.toList
+    users.find(u=>u.id.equals(id))
   }
 }
 

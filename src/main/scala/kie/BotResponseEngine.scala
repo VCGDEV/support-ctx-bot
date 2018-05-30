@@ -1,9 +1,12 @@
 package kie
+import java.sql.Timestamp
+import java.util.Date
+
 import bot.IntentClassification
 import config.logger.CustomAgendaEventListener
 import mail.MailService
 import org.slf4j.LoggerFactory
-import repository.model.{Conversation, ConversationDao}
+import repository.model.{Conversation, ConversationDao, ConversationHistory, ConversationHistoryDao}
 
 import scala.io.Source
 import net.liftweb.json.{DefaultFormats, parse}
@@ -21,6 +24,10 @@ object BotResponseEngine {
     *  @param process the response to process in the rules
     * */
   def determineBotResponse(process:MessageResponse): String = {
+    //save incoming message, for history
+    val history = new ConversationHistory(0,process.intent,process.message,process.username,"luky",new Timestamp(new Date().getTime),
+      process.chatId)
+    ConversationHistoryDao.save(history)
     val session = Kie.newSession
     logger.info(s"Sending data to rule engine - context: ${process.conversation.currentContext}")
     val classFind = classifications.find(c => c.tag == process.intent)
@@ -33,8 +40,11 @@ object BotResponseEngine {
     //update conversation with new values
     val conversation:Conversation = process.conversation
     ConversationDao.update(conversation)
+    //save response message
+    val response = new ConversationHistory(0,process.intent,process.responseString,"luky",process.username,new Timestamp(new Date().getTime),
+      process.chatId)
+    ConversationHistoryDao.save(response)
     process.responseString
-
   }
 
   def loadIntentClassifications():List[IntentClassification] = {

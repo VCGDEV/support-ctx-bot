@@ -4,7 +4,9 @@ import slick.lifted.Tag
 
 
 case class Conversation(chatId:Long,var currentContext:String,var sendToNlpNext:Boolean,createdDate:Timestamp,
-                        var description:String,var summary:String,var category:String,var subcategory:String,var customer:String,var ticketId:String)
+                        var description:String,var summary:String,var category:String,var subcategory:String,
+                        var customer:String,var ticketId:String,
+                        val username:String)
 
 
 import slick.jdbc.PostgresProfile.api._
@@ -20,6 +22,7 @@ class ConversationTable(tag:Tag) extends Table[Conversation](tag,"conversation_c
   def subcategory = column[String]("subcategory")
   def customer = column[String]("customer")
   def ticketId = column[String]("ticket_id")
-  override def * : ProvenShape[Conversation] = (chatId,currentContext,sendToNlpNext,createdDate,description,summary,category,subcategory,customer,ticketId) <> (Conversation.tupled,Conversation.unapply)
+  def username = column[String]("username")
+  override def * : ProvenShape[Conversation] = (chatId,currentContext,sendToNlpNext,createdDate,description,summary,category,subcategory,customer,ticketId,username) <> (Conversation.tupled,Conversation.unapply)
   override def toString(): String = s"chatId: ${chatId} - context: ${currentContext}"
 }

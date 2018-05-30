@@ -1,8 +1,6 @@
 package bot
+import com.typesafe.scalalogging.Logger
 import config.oauth.OauthFactory
-import org.slf4j.LoggerFactory
-import org.w3.banana.{RDF, RDFModule, RDFOpsModule, SparqlHttpModule, SparqlOpsModule}
-import sparql.{AsignoKnowledgeManagerImpl}
 import telegram.SafeBot
 /**
   * @author Victor de la Cruz
@@ -10,19 +8,12 @@ import telegram.SafeBot
   * Main class
   * */
 object ContextTelegramBot extends AppStart with App {
-  val logger = LoggerFactory.getLogger(ContextTelegramBot.getClass)
+  val logger = Logger(ContextTelegramBot.getClass)
   logger.info(start_msg)
   OauthFactory.credentials()
   SafeBot.run()
-  AsignoKnowledgeManagerImpl.selectUsers().foreach(println)
 }
 
 trait AppStart {
-  lazy val start_msg: String = "Support Ctx Bot 1.0.0"
+  lazy val start_msg: String = "Luky Bot 0.1.0 Created By VCG"
 }
-
-trait SPARQLExampleDependencies
-  extends RDFModule
-    with RDFOpsModule
-    with SparqlOpsModule
-    with SparqlHttpModule

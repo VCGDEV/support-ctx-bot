@@ -26,7 +26,7 @@ case class CommentCreated(isCreated:Boolean)
   * */
 @BeanInfo
 case class MessageResponse(var intent:String,var entities:Map[String,List[WitIntent]],var conversation:Conversation, val message:String,val chatId:Long,
-                           val commentView: CommentView) extends BotFact{
+                           val commentView: CommentView,val username:String) extends BotFact{
   var responseString:String = ""
   var classification:IntentClassification = null
   var customerView:CustomerView=null

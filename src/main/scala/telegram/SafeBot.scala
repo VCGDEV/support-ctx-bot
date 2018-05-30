@@ -9,7 +9,7 @@ import info.mukel.telegrambot4s.api.{Polling, TelegramBot}
 import info.mukel.telegrambot4s.methods.GetFile
 
 import scala.io.Source
-import org.slf4j.{LoggerFactory, MDC}
+import org.slf4j.MDC
 import wit.WitAiProcessor
 import com.typesafe.config.{Config, ConfigFactory}
 import net.liftweb.json.DefaultFormats
@@ -25,6 +25,7 @@ import info.mukel.telegrambot4s.models.Message
 import kie.{BotResponseEngine, MessageResponse}
 import org.apache.commons.codec.binary.Base64
 import repository.model.{Conversation, ConversationDao}
+import sparql.AsignoKnowledgeManagerImpl
 
 import scala.concurrent.{Await, Future}
 import scala.concurrent.duration._
@@ -44,8 +45,7 @@ object SafeBot extends TelegramBot with Polling with Commands {
     .getOrElse(Source.fromInputStream(getClass.getResourceAsStream("/bot.token")).getLines().mkString)
   implicit val formats: DefaultFormats.type = net.liftweb.json.DefaultFormats
   val ignoredWords:Seq[String] = Seq("/start","/credentials","/clean")
-  val LOG = LoggerFactory.getLogger(SafeBot.getClass)
-  val db = slick.jdbc.JdbcBackend.Database.forConfig("db.config")
+  lazy val db = slick.jdbc.JdbcBackend.Database.forConfig("db.config")
 
   /**
     * Process <strong>/start</strong> command from telegram
@@ -81,43 +81,64 @@ object SafeBot extends TelegramBot with Polling with Commands {
 
 
   /**
-    * Process incoming messages from telegram
+    * Process incoming messages from telegram,get user details from SPARQL endpoint and verify if exists a previous conversation with the user
     * */
   onMessage({implicit msg =>{
-    MDC.put("UUID",UUID.randomUUID().toString)
-    ConversationDao.findById(msg.chat.id).onComplete{
-      case Success(s)=>
-        s match {
-          case Some(c)=>
-            processMessage(msg,c)
-          case None=>
-            LOG.info("Create new conversation for telegram chat")
+    val uuid = UUID.randomUUID().toString
+    MDC.put("UUID",uuid)
+    logger.info("Process incoming request from Telegram message")
+    var usernameTelegram = ""
+    msg.chat.username match {
+      case Some(username) => usernameTelegram = username
+      case None => usernameTelegram = msg.chat.id.toString
+    }
+    ///search user in knwoledge base
+    val user = AsignoKnowledgeManagerImpl.getUser(msg.chat.id.toString);
+    user match {
+      case Some(u) =>
+        ConversationDao.findById(msg.chat.id).onComplete{
+          case Success(s)=>
+            MDC.put("UUID",uuid)
+            s match {
+              case Some(c)=>
+                logger.info("Luky has a previous conversation with : {}",u.name)
+                processMessage(msg,c,u.name)
+              case None=>
+                logger.info("Luky is going to create new conversation with: {}",u.name)
+                val conversation:Conversation = new Conversation(msg.chat.id,"",true,
+                  new Timestamp(new Date().getTime),"","","","","",
+                  "",usernameTelegram)
+                ConversationDao.create(conversation)
+                  .onComplete{
+                    case Success(c)=>
+                      logger.debug(s"New conversation was created ${c.chatId}")
+                    case Failure(e)=>
+                      logger.error(s"Cant create new conversation ${e}")
+                  }
+                processMessage(msg, conversation,u.name)
+            }
+          case Failure(f)=>
+            MDC.put("UUID",uuid)
+            logger.error("Error al obtener conversacion",f)
             val conversation:Conversation = new Conversation(msg.chat.id,"",true,
-              new Timestamp(new Date().getTime),"","","","","","")
-            ConversationDao.create(conversation)
-                .onComplete{
-                  case Success(c)=>
-                    LOG.info(s"New conversation was created ${c.chatId}")
-                  case Failure(e)=>
-                    LOG.error(s"Cant create new conversation ${e}")
-                }
-            processMessage(msg, conversation)
+              new Timestamp(new Date().getTime),"","","","","","",
+              usernameTelegram)
+            processMessage(msg, conversation,u.name)
         }
-      case Failure(f)=>
-        LOG.error("Error al obtener conversacion",f)
-        val conversation:Conversation = new Conversation(msg.chat.id,"",true,
-          new Timestamp(new Date().getTime),"","","","","","")
-        processMessage(msg, conversation)
+      case None => reply("Una disculpa no encontre su informacion en mi base de datos")
     }
     MDC.remove("UUID")
     }
   })
 
-  def processMessage(implicit msg:Message,conversation:Conversation): Unit ={
-    val name = msg.from.get.firstName
+  /**
+    * Reply to user based on intent of message,
+    * sends a request to NLP to know the user intent and after that uses the intent in a Rule engine to determine the correct answer
+    * */
+  def processMessage(implicit msg:Message,conversation:Conversation,name:String): Unit ={
     msg.voice match {
       case Some(voice) =>
-        LOG.info(s"Download Telegram voice record ${voice.fileId}")
+        logger.info(s"Download Telegram voice record ${voice.fileId}")
         downloadFile(voice.fileId).onComplete{
           case Success(bytes)=>
             val caption = msg.caption match {
@@ -126,7 +147,7 @@ object SafeBot extends TelegramBot with Polling with Commands {
             }
             val comment:CommentView = CommentView(caption,OauthFactory.name,OauthFactory.username,"",getFilesFromMessage)
             reply(getUserIntent(GoogleSpeechRecognition.recognizeSpeech(bytes),msg.chat.id,name,conversation,comment))
-          case Failure(t)=>LOG.error(s"Error trying to download audio from telegram ${t}")
+          case Failure(t)=>logger.error(s"Error trying to download audio from telegram ${t}")
         }
       case None =>
         msg.text match {
@@ -152,16 +173,28 @@ object SafeBot extends TelegramBot with Polling with Commands {
     }
   }
 
+  /**
+    * Download attachment using telegram API REST
+    * @param fileId from telegram response
+    * @param fileName name of file to download
+    * @param mimeType content type image, json, video, etc.
+    * @return a new list with one element if the download is success, otherwise empty list
+    * */
   def downloadAttachment(fileId:String,fileName:String,mimeType:String):List[AttachmentView] = {
     try{
       val res = Await.result(downloadFile(fileId),20.second)
       List(AttachmentView(fileName,Base64.encodeBase64String(res.toArray),mimeType))
     }catch {
-      case e: Exception => LOG.error("Error on file download")
+      case e: Exception => logger.error("Error on file download")
         List()
     }
   }
 
+  /**
+    * Download all attachments from incoming message, this is for evidence on  ticket creation
+    * @param msg the message from telegram
+    * @return a list with all the attachments: pictures, voice, video...etc
+    * */
   def getFilesFromMessage(implicit msg:Message):List[AttachmentView] = {
     var attachments = List[AttachmentView]()
     msg.document match {
@@ -169,28 +202,28 @@ object SafeBot extends TelegramBot with Polling with Commands {
         val fileName = getValue(document.fileName)
         val mimeType = getValue(document.mimeType)
         attachments = attachments ::: downloadAttachment(document.fileId,fileName,mimeType)
-      case None => LOG.info("Message has no documents")
+      case None => logger.debug("Message has no documents")
     }
     msg.video match {
       case Some(video) =>
         val fileName = "video_note"
         val mimeType = getValue(video.mimeType)
         attachments = attachments ::: downloadAttachment(video.fileId,fileName,mimeType)
-      case None => LOG.info("Message has no video")
+      case None => logger.debug("Message has no video")
     }
     msg.audio match {
       case Some(audio)=>
         val fileName = "audio"
         val mimeType = getValue(audio.mimeType)
         attachments = attachments ::: downloadAttachment(audio.fileId,fileName,mimeType)
-      case None => LOG.info("Message has no audio")
+      case None => logger.debug("Message has no audio")
     }
     msg.voice match {
       case Some(voice)=>
         val fileName = "voice"
         val mimeType = getValue(voice.mimeType)
         attachments = attachments ::: downloadAttachment(voice.fileId,fileName,mimeType)
-      case None => LOG.info("Message has no voice")
+      case None => logger.debug("Message has no voice")
     }
     msg.photo match {
       case Some(pics)=>
@@ -198,9 +231,9 @@ object SafeBot extends TelegramBot with Polling with Commands {
         val fileName = p.fileId+".jpeg"
         val mimeType ="image/jpeg"
         attachments = attachments ::: downloadAttachment(p.fileId,fileName,mimeType);
-      case None => LOG.info("Message has no images")
+      case None => logger.debug("Message has no images")
     }
-    LOG.info(s"Attachments in message: ${attachments.size}")
+    logger.debug(s"Attachments in message: ${attachments.size}")
     attachments
   }
 
@@ -219,13 +252,13 @@ object SafeBot extends TelegramBot with Polling with Commands {
     * */
   def getUserIntent(msgText:String,chatId:Long,name:String,conversation:Conversation,
                     commentView: CommentView): String ={
-    LOG.info(s"Get user intent ${msgText}")
+    logger.debug(s"Get user intent ${msgText}")
     var reply:String = ""
     if(!ignoredWords.contains(msgText)){
-      val messageResponse = MessageResponse("", Map(),conversation,msgText,chatId,commentView)
+      val messageResponse = MessageResponse("", Map(),conversation,msgText,chatId,commentView,conversation.username)
       if(conversation.sendToNlpNext){//enviar a wit.ai
         val witResponse = WitAiProcessor.getIntents(msgText)
-        LOG.info(s"${witResponse}")
+        logger.info(s"Entities: \n ${witResponse}")
         messageResponse.entities = witResponse.entities.filterKeys(!_.equals("intent"))
         val intent = witResponse.entities.get("intent")
         intent match {

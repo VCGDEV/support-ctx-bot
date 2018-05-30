@@ -35,13 +35,12 @@ object WitAiProcessor {
     * @return WitResponse with entities and intent
     * */
   def getIntents(msgText:String): WitResponse ={
-    logger.info(s"Send request to :${witUrl}")
+    logger.info(s"Send request to :${witUrl} -  message: $msgText")
     implicit val httpClient: ApacheHttpClient = new ApacheHttpClient()
     val uri = new URIBuilder(witUrl).addParameter("v", s"$witVersion").addParameter("q", s"$msgText")
     val response = Await.result(GET(uri.build().toURL)
       .addHeaders("Authorization" -> witToken)
       .addHeaders("Accept" -> "application/json").apply, 10.second) //this will throw if the response doesn't return within 5 second
-    //System.out.println(response.bodyString);
     parse(response.bodyString).extract[WitResponse]
   }
 }
