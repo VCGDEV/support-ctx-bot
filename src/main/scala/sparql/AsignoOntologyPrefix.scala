@@ -70,4 +70,35 @@ class AsignoOntologyPrefix[Rdf <: RDF](ops: RDFOps[Rdf]) extends PrefixBuilder("
   val User = apply("User")
 }
 
+class IssuePrefix[Rdf <: RDF](ops: RDFOps[Rdf]) extends PrefixBuilder("iss","http://www.inbyte.semantic/lucy/ontologies/2018/5/issues#")(ops){
+  val BusinessFlow = apply("BusinessFlow")
+  val Category = apply("Category")
+  val Issue = apply("Issue")
+  val hasCategory = apply("hasCategory")
+  val hasIssue = apply("hasIssue")
+  val categoryId = apply("categoryId")
+  val devCategoryId = apply("devCategoryId")
+  val devSubcategoryId = apply("devSubcategoryId")
+  val intent = apply("intent")
+  val name = apply("name")
+  val subcategoryId = apply("subcategoryId")
+  val value = apply("value")
+}
+
+object IssueOntologyPrefix{
+  def apply[Rdf <: RDF](implicit ops:RDFOps[Rdf]) = new IssuePrefix(ops)
+}
+
+
+class IntentPrefix[Rdf <: RDF](ops: RDFOps[Rdf]) extends PrefixBuilder("ipx","http://www.inbyte.semantic/lucy/ontologies/2018/5/knowledge#")(ops){
+  val Answer = apply("Answer")
+  val Intent = apply("Intent")
+  val hasAnswer = apply("hasAnswer")
+  val intentType = apply("type")
+  val value = apply("value")
+}
+
+object IntentPrefix{
+  def apply[Rdf <: RDF](implicit ops:RDFOps[Rdf]) = new IntentPrefix(ops)
+}
 

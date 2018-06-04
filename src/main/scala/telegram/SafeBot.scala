@@ -20,12 +20,14 @@ import akka.http.scaladsl.model.{HttpRequest, Uri}
 import akka.http.scaladsl.unmarshalling.Unmarshal
 import akka.util.ByteString
 import asigno.{AttachmentView, CommentView}
+import com.hp.hpl.jena.vocabulary.RDF
 import google.GoogleSpeechRecognition
 import info.mukel.telegrambot4s.models.Message
 import kie.{BotResponseEngine, MessageResponse}
 import org.apache.commons.codec.binary.Base64
+import org.w3.banana.PointedGraph
 import repository.model.{Conversation, ConversationDao}
-import sparql.AsignoKnowledgeManagerImpl
+import sparql.{AsignoKnowledgeManagerImpl, AsignoOntologyPrefix}
 
 import scala.concurrent.{Await, Future}
 import scala.concurrent.duration._
@@ -40,7 +42,7 @@ import scala.util.Random
 object SafeBot extends TelegramBot with Polling with Commands {
 
   //load bot configuration for telegram
-  val conf: Config = ConfigFactory.load
+  lazy val conf: Config = ConfigFactory.load
   lazy val token: String = scala.util.Properties.envOrNone("BOT_TOKEN")
     .getOrElse(Source.fromInputStream(getClass.getResourceAsStream("/bot.token")).getLines().mkString)
   implicit val formats: DefaultFormats.type = net.liftweb.json.DefaultFormats
@@ -50,7 +52,9 @@ object SafeBot extends TelegramBot with Polling with Commands {
   /**
     * Process <strong>/start</strong> command from telegram
     * */
-  onCommand('start) { implicit msg => reply("Bienvenido, Mi nombre es Luky y soy un Bot de soporte tecnico, En que puedo ayudarte?!!!") }
+  onCommand('start) { implicit msg =>
+    reply("Bienvenido, Mi nombre es Luky y soy un Bot de soporte tecnico, En que puedo ayudarte?!!!")
+  }
 
 
   /**
@@ -59,6 +63,7 @@ object SafeBot extends TelegramBot with Polling with Commands {
   onCommand("credentials") {implicit msg=>reply(OauthFactory.name())}
 
   onCommand("clean"){implicit msg =>
+    logger.info("Clean current contexgt from bot")
     ConversationDao.findById(msg.chat.id).onComplete{
       case Success(s)=>
         s match {
@@ -93,9 +98,49 @@ object SafeBot extends TelegramBot with Polling with Commands {
       case None => usernameTelegram = msg.chat.id.toString
     }
     ///search user in knwoledge base
-    val user = AsignoKnowledgeManagerImpl.getUser(msg.chat.id.toString);
-    user match {
+    try {
+      val user = AsignoKnowledgeManagerImpl.getUser(msg.chat.id.toString).getOrElse(throw new Exception("No user was found"))
+      ConversationDao.findById(msg.chat.id).onComplete{
+        case Success(s)=>
+          MDC.put("UUID",uuid)
+          s match {
+            case Some(c)=>
+              logger.info("Luky has a previous conversation with : {}",user.name)
+              processMessage(msg,c,user.name)
+            case None=>
+              logger.info("Luky is going to create new conversation with: {}",user.name)
+              val conversation:Conversation = new Conversation(msg.chat.id,"",true,
+                new Timestamp(new Date().getTime),"","","","","",
+                "",usernameTelegram)
+              ConversationDao.create(conversation)
+                .onComplete{
+                  case Success(c)=>
+                    logger.debug(s"New conversation was created ${c.chatId}")
+                  case Failure(e)=>
+                    logger.error(s"Cant create new conversation ${e}")
+                }
+              processMessage(msg, conversation,user.name)
+          }
+        case Failure(f)=>
+          MDC.put("UUID",uuid)
+          logger.error("Error al obtener conversacion",f)
+          val conversation:Conversation = new Conversation(msg.chat.id,"",true,
+            new Timestamp(new Date().getTime),"","","","","","",
+            usernameTelegram)
+          processMessage(msg, conversation,user.name)
+      }
+    }catch {
+      case e: Exception => reply("No pude encontrar tu usuario, favor de solicitar el registro en asigno")
+        logger.error("An error ocurred in users select",e)
+    }
+    /*user match {
       case Some(u) =>
+        u.hasPC match {
+          case Some(n)=>
+            logger.info("Get computer details")
+            AsignoKnowledgeManagerImpl.getGraph(n.getURI,AsignoKnowledgeManagerImpl.asigno.Laptop)
+          case None=>logger.info("User has no PC")
+        }
         ConversationDao.findById(msg.chat.id).onComplete{
           case Success(s)=>
             MDC.put("UUID",uuid)
@@ -126,7 +171,7 @@ object SafeBot extends TelegramBot with Polling with Commands {
             processMessage(msg, conversation,u.name)
         }
       case None => reply("Una disculpa no encontre su informacion en mi base de datos")
-    }
+    }*/
     MDC.remove("UUID")
     }
   })
@@ -259,13 +304,24 @@ object SafeBot extends TelegramBot with Polling with Commands {
       if(conversation.sendToNlpNext){//enviar a wit.ai
         val witResponse = WitAiProcessor.getIntents(msgText)
         logger.info(s"Entities: \n ${witResponse}")
+        reply = "In construction"
         messageResponse.entities = witResponse.entities.filterKeys(!_.equals("intent"))
         val intent = witResponse.entities.get("intent")
         intent match {
           case Some(witIntents) =>
             witIntents.foreach(intent=>{
               messageResponse.intent = intent.value
-              reply = BotResponseEngine.determineBotResponse(messageResponse)
+              val intentNode = AsignoKnowledgeManagerImpl.searchIntent(intent.value)
+              intentNode match {
+                case Some(i) =>
+                    if(i.intentType.equalsIgnoreCase("ask")){
+                      logger.info(s"Answers: ${i.hasAnswer}")
+                    }else{
+                      reply = s"Intent: ${i.intentType} aun no es posible procesar"
+                    }
+                case None=>reply = "Lo siento aun no puedo procesar lo que me pides"
+              }
+              //reply = BotResponseEngine.determineBotResponse(messageResponse)
             })
           case None => //take previous context
             reply = BotResponseEngine.determineBotResponse(messageResponse)
