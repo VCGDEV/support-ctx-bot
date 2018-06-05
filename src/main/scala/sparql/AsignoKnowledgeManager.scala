@@ -4,9 +4,10 @@ import org.w3.banana._
 import binder._
 import java.net.URL
 
+import com.typesafe.config.ConfigFactory
 import com.typesafe.scalalogging.Logger
 import org.slf4j.LoggerFactory
-import org.w3.banana.jena.{Jena, JenaModule}
+import org.w3.banana.jena.Jena
 
 import scala.util.{Failure, Random, Success, Try}
 
@@ -20,17 +21,15 @@ class AsignoKnowledgeManager[Rdf <: RDF](implicit
   import recordBinder._
   import sparqlOps._
   import sparqlHttp.sparqlEngineSyntax._
-  val SPARQLEndpoint = new URL("http://localhost:8890/sparql")
+  lazy val config = ConfigFactory.load
+  val SPARQLEndpoint = new URL(config.getString("sparql.config.url"))//query to this endpoint
   val logger = Logger(LoggerFactory.getLogger("AsignoKnowledgeManager"))
   val asigno = AsignoOntologyPrefix[Rdf]
   val issuePrefix = IssueOntologyPrefix[Rdf]
   val intentPrefix = IntentPrefix[Rdf]
-  val defaultPrefixes =
-    """
-      PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-      PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-      PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
-    """
+  val defaultPrefixes ="PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> " +
+    "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> " +
+    "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>"
   val asignoURI = "PREFIX asn: <http://www.apps.inbyte.mx/vcruz/ontologies/2018/4/asigno#>"
   val issueURI = "PREFIX  iss:  <http://www.inbyte.semantic/lucy/ontologies/2018/5/issues#>"
   val intentURI = "PREFIX ipx: <http://www.inbyte.semantic/lucy/ontologies/2018/5/knowledge#>"
@@ -73,8 +72,6 @@ class AsignoKnowledgeManager[Rdf <: RDF](implicit
 
   object Category{
     val clazz = issuePrefix.Category
-
-
     val value = property[String](issuePrefix.value)
     val intent = property[String](issuePrefix.intent)
     val name = property[String](issuePrefix.name)
@@ -106,19 +103,6 @@ class AsignoKnowledgeManager[Rdf <: RDF](implicit
   }
 
 
-  def getGraph(iri:String,fType: Rdf#URI) ={
-    logger.info("URI search: {}",fType)
-    val query = parseConstruct(s"$defaultPrefixes $asignoURI CONSTRUCT {" +
-      s"<${iri}> ?predicate ?object " +
-      s"} WHERE {<${iri}> ?predicate ?object}").get
-    val graph = SPARQLEndpoint.executeConstruct(query).get
-    graph.triples.collect{
-      case Triple(r,rdf.typ,s)=>
-        PointedGraph(r,graph)
-    }
-    //logger.info("Selected: \n{}",node)
-  }
-
   def getCategory(intent:String):Option[Category] = {
     val query = parseConstruct(s"$defaultPrefixes $issueURI CONSTRUCT {" +
       s"?individual ?p ?o} WHERE {" +
@@ -146,13 +130,10 @@ class AsignoKnowledgeManager[Rdf <: RDF](implicit
       s"?individual ?p ?o" +
       s"}").get
     val resultGrap = SPARQLEndpoint.executeConstruct(query).get
-    val intents = resultGrap.triples.collect{
+    resultGrap.triples.collect{
       case Triple(intent,rdf.`type`,intentPrefix.Intent)=>
-        val pg = PointedGraph(intent,resultGrap)
-        logger.info(s"${pg}")
-        pg.as[Intent].toOption
-    }.flatten.toList
-    intents.find(s=>s.value.equals(intent))
+        PointedGraph(intent,resultGrap).as[Intent].toOption
+    }.flatten.toList.find(s=>s.value.equals(intent))
   }
 
   def getAnswer(iri:String):Option[Answer] = {

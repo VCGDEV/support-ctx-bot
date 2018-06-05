@@ -285,9 +285,8 @@ object SafeBot extends TelegramBot with Polling with Commands {
                     }
                 case None=>reply = "Lo siento aun no puedo procesar lo que me pides"
               }
-              //reply = BotResponseEngine.determineBotResponse(messageResponse)
             })
-          case None => //take previous context
+          case None =>
             reply = BotResponseEngine.determineBotResponse(messageResponse)
         }
       }else{
@@ -317,11 +316,4 @@ object SafeBot extends TelegramBot with Polling with Commands {
     )
   }
 
-  /**
-    * Take a random element from possible responses array
-    *  @param list a sequence of posible arrays
-    *  @param random Random object with configurations to obtain next position of array
-    *  @return message response
-    * */
-  def getRandomElement(list: Seq[String], random: Random): String = list(random.nextInt(list.length))
 }
