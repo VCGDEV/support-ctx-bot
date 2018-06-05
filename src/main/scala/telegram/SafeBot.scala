@@ -133,45 +133,6 @@ object SafeBot extends TelegramBot with Polling with Commands {
       case e: Exception => reply("No pude encontrar tu usuario, favor de solicitar el registro en asigno")
         logger.error("An error ocurred in users select",e)
     }
-    /*user match {
-      case Some(u) =>
-        u.hasPC match {
-          case Some(n)=>
-            logger.info("Get computer details")
-            AsignoKnowledgeManagerImpl.getGraph(n.getURI,AsignoKnowledgeManagerImpl.asigno.Laptop)
-          case None=>logger.info("User has no PC")
-        }
-        ConversationDao.findById(msg.chat.id).onComplete{
-          case Success(s)=>
-            MDC.put("UUID",uuid)
-            s match {
-              case Some(c)=>
-                logger.info("Luky has a previous conversation with : {}",u.name)
-                processMessage(msg,c,u.name)
-              case None=>
-                logger.info("Luky is going to create new conversation with: {}",u.name)
-                val conversation:Conversation = new Conversation(msg.chat.id,"",true,
-                  new Timestamp(new Date().getTime),"","","","","",
-                  "",usernameTelegram)
-                ConversationDao.create(conversation)
-                  .onComplete{
-                    case Success(c)=>
-                      logger.debug(s"New conversation was created ${c.chatId}")
-                    case Failure(e)=>
-                      logger.error(s"Cant create new conversation ${e}")
-                  }
-                processMessage(msg, conversation,u.name)
-            }
-          case Failure(f)=>
-            MDC.put("UUID",uuid)
-            logger.error("Error al obtener conversacion",f)
-            val conversation:Conversation = new Conversation(msg.chat.id,"",true,
-              new Timestamp(new Date().getTime),"","","","","","",
-              usernameTelegram)
-            processMessage(msg, conversation,u.name)
-        }
-      case None => reply("Una disculpa no encontre su informacion en mi base de datos")
-    }*/
     MDC.remove("UUID")
     }
   })
@@ -315,7 +276,12 @@ object SafeBot extends TelegramBot with Polling with Commands {
               intentNode match {
                 case Some(i) =>
                     if(i.intentType.equalsIgnoreCase("ask")){
-                      logger.info(s"Answers: ${i.hasAnswer}")
+                      val rdfURI = AsignoKnowledgeManagerImpl.getRandomElement(i.hasAnswer)
+                      val answer = AsignoKnowledgeManagerImpl.getAnswer(rdfURI.getURI)
+                      answer match {
+                        case Some(a)=>reply = a.value
+                        case None=>reply=s"Lo siento aun no puedo procesar tu peticion ${i.intentType}"
+                      }
                     }else{
                       reply = s"Intent: ${i.intentType} aun no es posible procesar"
                     }

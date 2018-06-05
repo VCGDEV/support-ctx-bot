@@ -68,16 +68,6 @@ class AsignoKnowledgeManager[Rdf <: RDF](implicit
     val hasPC = optional[Rdf#URI](asigno("hasPC"))
     implicit val binder = pgb[User](name, email, id,hasPC)(User.apply, User.unapply)
   }
-
-  case class PC(idAddress:String,hasSoftware:Set[Rdf#URI],hasPrinter:Set[Rdf#URI])
-  object PC{
-    val clazz = asigno.Pc
-    val ip = property[String](asigno.ipAddress)
-    val hasSoftware = set[Rdf#URI](asigno.hasSoftware)
-    val hasPrinter = set[Rdf#URI](asigno.hasPrinter)
-    implicit val binder = pgb[PC](ip,hasSoftware,hasPrinter)(PC.apply, PC.unapply)
-  }
-
   case class Category(categoryId:Long,devCategoryId:Long,value:String,subcategoryId:Long,
                       intent:String,name:String,devSubcategoryId:Long)
 
@@ -166,7 +156,7 @@ class AsignoKnowledgeManager[Rdf <: RDF](implicit
   }
 
   def getAnswer(iri:String):Option[Answer] = {
-    val query = parseConstruct(s"$defaultPrefixes $intentPrefix CONSTRUCT {" +
+    val query = parseConstruct(s"$defaultPrefixes $intentURI CONSTRUCT {" +
       s"<$iri> ?predicate ?object " +
       s"} WHERE {<$iri> ?predicate ?object}").get
     val graph = SPARQLEndpoint.executeConstruct(query).get
@@ -183,10 +173,13 @@ class AsignoKnowledgeManager[Rdf <: RDF](implicit
   /**
     * Take a random element from possible responses array
     *  @param list a sequence of posible arrays
-    *  @param random Random object with configurations to obtain next position of array
     *  @return message response
     * */
-  def getRandomElement(list: Set[Rdf#URI], random: Random)= list.take(random.nextInt(list.size))
+  def getRandomElement(list: Set[Rdf#URI]): Rdf#URI= {
+    val random = new Random(System.currentTimeMillis());
+    val index = random.nextInt(list.size)
+    list.toList(index)
+  }
 
   //this has to be the only harcoded query, construct graph after this and navigate according to user issue
   def getUser(id:String):Option[User] = {
