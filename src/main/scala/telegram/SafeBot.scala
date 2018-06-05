@@ -20,14 +20,12 @@ import akka.http.scaladsl.model.{HttpRequest, Uri}
 import akka.http.scaladsl.unmarshalling.Unmarshal
 import akka.util.ByteString
 import asigno.{AttachmentView, CommentView}
-import com.hp.hpl.jena.vocabulary.RDF
 import google.GoogleSpeechRecognition
 import info.mukel.telegrambot4s.models.Message
 import kie.{BotResponseEngine, MessageResponse}
 import org.apache.commons.codec.binary.Base64
-import org.w3.banana.PointedGraph
 import repository.model.{Conversation, ConversationDao}
-import sparql.{AsignoKnowledgeManagerImpl, AsignoOntologyPrefix}
+import sparql.{AsignoKnowledgeManagerImpl}
 
 import scala.concurrent.{Await, Future}
 import scala.concurrent.duration._
