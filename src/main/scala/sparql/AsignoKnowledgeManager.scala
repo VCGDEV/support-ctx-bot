@@ -8,7 +8,7 @@ import com.typesafe.config.ConfigFactory
 import com.typesafe.scalalogging.Logger
 import org.slf4j.LoggerFactory
 import org.w3.banana.jena.Jena
-import sparql.entities.{Intention, IssueCategory, User}
+import sparql.entities.{Intention, IssueCategory, OntologyAnswer, User}
 
 import scala.util.{Failure, Random, Success, Try}
 
@@ -112,11 +112,10 @@ class AsignoKnowledgeManager[Rdf <: RDF](implicit
     val resultGraph = SPARQLEndpoint.executeConstruct(query).get
     resultGraph.triples.collect{
       case Triple(category,rdf.`type`,issuePrefix.Category)=>
-        val pg = PointedGraph(category,resultGraph)
-        pg.as[Category].toOption
-    }.flatten.toList
-    .map(c=>IssueCategory(c.categoryId,c.devCategoryId,c.value,c.subcategoryId,
-      c.intent,c.name,c.devSubcategoryId)).find(c=>c.intent.equals(intent))
+        val c = PointedGraph(category,resultGraph).as[Category].get
+        IssueCategory(c.categoryId,c.devCategoryId,c.value,c.subcategoryId,
+          c.intent,c.name,c.devSubcategoryId)
+    }.find(c=>c.intent.equals(intent))
   }
 
   def searchIntent(intent: String):Option[Intention]={
@@ -131,20 +130,21 @@ class AsignoKnowledgeManager[Rdf <: RDF](implicit
     val resultGrap = SPARQLEndpoint.executeConstruct(query).get
     resultGrap.triples.collect{
       case Triple(intent,rdf.`type`,intentPrefix.Intent)=>
-        PointedGraph(intent,resultGrap).as[Intent].toOption
-    }.flatten.toList
-      .map(i=>Intention(i.intentType,i.value,i.hasAnswer.toSet)).find(s=>s.value.equals(intent))
+        val int_ = PointedGraph(intent,resultGrap).as[Intent].get
+        Intention(int_.intentType,int_.value,int_.hasAnswer.toSet)
+    }.find(p=>p.value.equals(intent))
   }
 
-  def getAnswer(iri:String):Option[Answer] = {
+  def getAnswer(iri:String):Option[OntologyAnswer] = {
     val query = parseConstruct(s"$defaultPrefixes $intentURI CONSTRUCT {" +
       s"<$iri> ?predicate ?object " +
       s"} WHERE {<$iri> ?predicate ?object}").get
     val graph = SPARQLEndpoint.executeConstruct(query).get
-    val answers:List[Answer] = graph.triples.collect{
+    val answers:Iterable[OntologyAnswer] = graph.triples.collect{
       case Triple(answer,rdf.`type`,intentPrefix.Answer)=>
-        PointedGraph(answer,graph).as[Answer].toOption
-    }.flatten.toList
+        val a_ = PointedGraph(answer,graph).as[Answer].get
+        OntologyAnswer(a_.value)
+    }
     if(answers.size>0)
       Some(answers.head)
     else
