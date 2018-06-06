@@ -8,7 +8,7 @@ import com.typesafe.config.ConfigFactory
 import com.typesafe.scalalogging.Logger
 import org.slf4j.LoggerFactory
 import org.w3.banana.jena.Jena
-import sparql.entities.User
+import sparql.entities.{IssueCategory, User}
 
 import scala.util.{Failure, Random, Success, Try}
 
@@ -101,7 +101,7 @@ class AsignoKnowledgeManager[Rdf <: RDF](implicit
     implicit val binder = pgb[UserDO](name, email, id,hasPC)(UserDO.apply, UserDO.unapply)
   }
 
-  def getCategory(intent:String):Option[Category] = {
+  def getCategory(intent:String):Option[IssueCategory] = {
     val query = parseConstruct(s"$defaultPrefixes $issueURI CONSTRUCT {" +
       s"?individual ?p ?o} WHERE {" +
       s"?individual rdf:type iss:Category." +
@@ -110,12 +110,13 @@ class AsignoKnowledgeManager[Rdf <: RDF](implicit
       s"?individual ?p ?o" +
       s"}").get
     val resultGraph = SPARQLEndpoint.executeConstruct(query).get
-    val categories:List[Category] = resultGraph.triples.collect{
+    resultGraph.triples.collect{
       case Triple(category,rdf.`type`,issuePrefix.Category)=>
         val pg = PointedGraph(category,resultGraph)
         pg.as[Category].toOption
     }.flatten.toList
-    categories.find(c=>c.intent.equals(intent))
+    .map(c=>IssueCategory(c.categoryId,c.devCategoryId,c.value,c.subcategoryId,
+      c.intent,c.name,c.devSubcategoryId)).find(c=>c.intent.equals(intent))
   }
 
   def searchIntent(intent: String):Option[Intent]={
