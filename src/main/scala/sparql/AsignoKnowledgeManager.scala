@@ -133,7 +133,7 @@ class AsignoKnowledgeManager[Rdf <: RDF](implicit
       case Triple(intent,rdf.`type`,intentPrefix.Intent)=>
         PointedGraph(intent,resultGrap).as[Intent].toOption
     }.flatten.toList
-      .map(i=>Intention(i.value,i.intentType,i.hasAnswer.toSet)).find(s=>s.value.equals(intent))
+      .map(i=>Intention(i.intentType,i.value,i.hasAnswer.toSet)).find(s=>s.value.equals(intent))
   }
 
   def getAnswer(iri:String):Option[Answer] = {
@@ -156,7 +156,7 @@ class AsignoKnowledgeManager[Rdf <: RDF](implicit
     *  @param list a sequence of posible arrays
     *  @return message response
     * */
-  def getRandomElement(list: Set[Rdf#URI]): Rdf#URI= {
+  def getRandomElement(list: Set[RDF#URI]): RDF#URI= {
     val random = new Random(System.currentTimeMillis());
     val index = random.nextInt(list.size)
     list.toList(index)

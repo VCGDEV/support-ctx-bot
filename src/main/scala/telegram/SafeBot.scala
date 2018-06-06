@@ -273,7 +273,7 @@ object SafeBot extends TelegramBot with Polling with Commands {
                 case Some(i) =>
                     if(i.intentType.equalsIgnoreCase("ask")){
                       val rdfURI = AsignoKnowledgeManagerImpl.getRandomElement(i.hasAnswer)
-                      val answer = AsignoKnowledgeManagerImpl.getAnswer(rdfURI.getURI)
+                      val answer = AsignoKnowledgeManagerImpl.getAnswer(rdfURI.toString)
                       answer match {
                         case Some(a)=>reply = a.value
                         case None=>reply=s"Lo siento aun no puedo procesar tu peticion ${i.intentType}"
