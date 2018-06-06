@@ -29,7 +29,6 @@ import sparql.{AsignoKnowledgeManagerImpl}
 
 import scala.concurrent.{Await, Future}
 import scala.concurrent.duration._
-import scala.util.Random
 
 /**
   * @author Victor de la Cruz Gonzalez
@@ -61,7 +60,7 @@ object SafeBot extends TelegramBot with Polling with Commands {
   onCommand("credentials") {implicit msg=>reply(OauthFactory.name())}
 
   onCommand("clean"){implicit msg =>
-    logger.info("Clean current contexgt from bot")
+    logger.info("Clean current context from bot")
     ConversationDao.findById(msg.chat.id).onComplete{
       case Success(s)=>
         s match {
@@ -98,6 +97,7 @@ object SafeBot extends TelegramBot with Polling with Commands {
     ///search user in knwoledge base
     try {
       val user = AsignoKnowledgeManagerImpl.getUser(msg.chat.id.toString).getOrElse(throw new Exception("No user was found"))
+      logger.info("{}",user)
       ConversationDao.findById(msg.chat.id).onComplete{
         case Success(s)=>
           MDC.put("UUID",uuid)
@@ -112,10 +112,8 @@ object SafeBot extends TelegramBot with Polling with Commands {
                 "",usernameTelegram)
               ConversationDao.create(conversation)
                 .onComplete{
-                  case Success(c)=>
-                    logger.debug(s"New conversation was created ${c.chatId}")
-                  case Failure(e)=>
-                    logger.error(s"Cant create new conversation ${e}")
+                  case Success(c)=>logger.debug(s"New conversation was created ${c.chatId}")
+                  case Failure(e)=>logger.error(s"Cant create new conversation ${e}")
                 }
               processMessage(msg, conversation,user.name)
           }

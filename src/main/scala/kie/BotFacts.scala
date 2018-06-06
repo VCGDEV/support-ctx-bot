@@ -9,7 +9,6 @@ import net.liftweb.json.DefaultFormats
 import repository.model.{Conversation, IssueNotClassified, IssueNotClassifiedDao}
 import wit.WitIntent
 import net.liftweb.json.Serialization.write
-
 import scala.beans.BeanInfo
 sealed trait BotFact
 class BotFacts {

@@ -8,6 +8,7 @@ import com.typesafe.config.ConfigFactory
 import com.typesafe.scalalogging.Logger
 import org.slf4j.LoggerFactory
 import org.w3.banana.jena.Jena
+import sparql.entities.User
 
 import scala.util.{Failure, Random, Success, Try}
 
@@ -33,9 +34,6 @@ class AsignoKnowledgeManager[Rdf <: RDF](implicit
   val asignoURI = "PREFIX asn: <http://www.apps.inbyte.mx/vcruz/ontologies/2018/4/asigno#>"
   val issueURI = "PREFIX  iss:  <http://www.inbyte.semantic/lucy/ontologies/2018/5/issues#>"
   val intentURI = "PREFIX ipx: <http://www.inbyte.semantic/lucy/ontologies/2018/5/knowledge#>"
-  case class User(name: String, email:String, id:String,
-                  hasPC:Option[Rdf#URI]) {
-  }
 
   object LongBinder{
     implicit val LongToLiteral = new ToLiteral[Rdf,Long] {
@@ -56,16 +54,6 @@ class AsignoKnowledgeManager[Rdf <: RDF](implicit
         }
       }
     }
-  }
-
-  object User {
-    val clazz = asigno.Person
-    implicit val classUris = classUrisFor[User](clazz)
-    val name = property[String](asigno("name"))
-    val email = property[String](asigno("email"))
-    val id = property[String](asigno("id"))
-    val hasPC = optional[Rdf#URI](asigno("hasPC"))
-    implicit val binder = pgb[User](name, email, id,hasPC)(User.apply, User.unapply)
   }
   case class Category(categoryId:Long,devCategoryId:Long,value:String,subcategoryId:Long,
                       intent:String,name:String,devSubcategoryId:Long)
@@ -102,6 +90,16 @@ class AsignoKnowledgeManager[Rdf <: RDF](implicit
     implicit val binder = pgb[Answer](value)(Answer.apply,Answer.unapply)
   }
 
+  case class UserDO(name: String, email:String, id:String, hasPC:Rdf#URI)
+  object UserDO{
+    val clazz = asigno.User
+    implicit val classUris = classUrisFor[UserDO](clazz)
+    val name = property[String](asigno.name)
+    val email = property[String](asigno.email)
+    val id = property[String](asigno.id)
+    val hasPC = property[Rdf#URI](asigno.hasPC)
+    implicit val binder = pgb[UserDO](name, email, id,hasPC)(UserDO.apply, UserDO.unapply)
+  }
 
   def getCategory(intent:String):Option[Category] = {
     val query = parseConstruct(s"$defaultPrefixes $issueURI CONSTRUCT {" +
@@ -174,20 +172,16 @@ class AsignoKnowledgeManager[Rdf <: RDF](implicit
       s"FILTER(?id='${id}'^^xsd:string)."+
       "?individual ?p ?o .}").get
     val resultGraph = SPARQLEndpoint.executeConstruct(query).get
-    val users:List[User]=resultGraph.triples.collect{
+    resultGraph.triples.collect{
       case Triple(user,rdf.`type`,asigno.Customer) =>
         val pg = PointedGraph(user, resultGraph)
-        pg.as[User].toOption
+        pg.as[UserDO].toOption
       case Triple(user,rdf.typ,asigno.Technician)=>
         val pg = PointedGraph(user,resultGraph)
-        pg.as[User].toOption
-    }.flatten.toList
-    users.find(u=>u.id.equals(id))
+        pg.as[UserDO].toOption
+    }.flatten.toList.map(u=>User(u.name,u.email,u.id,u.hasPC))//TODO remove this mapping and extract  the UserDO to another file
+        .find(u=>u.id.equals(id))
   }
 }
 
 object AsignoKnowledgeManagerImpl extends AsignoKnowledgeManager[Jena]
-
-
-
-

@@ -27,7 +27,7 @@ object WitAiProcessor {
   //default json format parser
   implicit val formats: DefaultFormats.type = net.liftweb.json.DefaultFormats
 
-  val logger = LoggerFactory.getLogger(WitAiProcessor.getClass);
+  val logger = LoggerFactory.getLogger(WitAiProcessor.getClass)
   /**
     * Method to send request at <strong>https://wit.ai<strong>, using configurations from application.properties
     * a timeout is throw if the request exceeds 5 seconds
