@@ -9,6 +9,9 @@ import net.liftweb.json.DefaultFormats
 import repository.model.{Conversation, IssueNotClassified, IssueNotClassifiedDao}
 import wit.WitIntent
 import net.liftweb.json.Serialization.write
+import sparql.AsignoKnowledgeManagerImpl
+import sparql.entities.{Intention, OntologyAnswer, User}
+
 import scala.beans.BeanInfo
 sealed trait BotFact
 class BotFacts {
@@ -18,6 +21,15 @@ class BotFacts {
 case class Customer(isInAsigno:Boolean)
 case class TicketCreated(isCreated:Boolean,folio:String)
 case class CommentCreated(isCreated:Boolean)
+@BeanInfo
+case class ProcessIntention(user:User,intention:Intention,conversation:Conversation,
+                            entities:Map[String,List[WitIntent]],message:String,chatId:Long){
+  var answer:String = ""
+  def getAnswer() = {
+    val rdfURI = AsignoKnowledgeManagerImpl.getRandomElement(intention.hasAnswer)
+    answer = AsignoKnowledgeManagerImpl.getAnswer(rdfURI.toString).getOrElse(OntologyAnswer("")).value
+  }
+}
 /**
   * @author Victor de la Cruz
   * @version 1.0.0

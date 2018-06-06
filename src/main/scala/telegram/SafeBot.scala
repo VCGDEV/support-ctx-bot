@@ -22,10 +22,11 @@ import akka.util.ByteString
 import asigno.{AttachmentView, CommentView}
 import google.GoogleSpeechRecognition
 import info.mukel.telegrambot4s.models.Message
-import kie.{BotResponseEngine, MessageResponse}
+import kie.{BotResponseEngine, MessageResponse, ProcessIntention}
 import org.apache.commons.codec.binary.Base64
 import repository.model.{Conversation, ConversationDao}
-import sparql.{AsignoKnowledgeManagerImpl}
+import sparql.AsignoKnowledgeManagerImpl
+import sparql.entities.{Intention, User}
 
 import scala.concurrent.{Await, Future}
 import scala.concurrent.duration._
@@ -97,14 +98,13 @@ object SafeBot extends TelegramBot with Polling with Commands {
     ///search user in knwoledge base
     try {
       val user = AsignoKnowledgeManagerImpl.getUser(msg.chat.id.toString).getOrElse(throw new Exception("No user was found"))
-      logger.info("{}",user)
       ConversationDao.findById(msg.chat.id).onComplete{
         case Success(s)=>
           MDC.put("UUID",uuid)
           s match {
             case Some(c)=>
               logger.info("Luky has a previous conversation with : {}",user.name)
-              processMessage(msg,c,user.name)
+              processMessage(msg,c,user)
             case None=>
               logger.info("Luky is going to create new conversation with: {}",user.name)
               val conversation:Conversation = new Conversation(msg.chat.id,"",true,
@@ -115,7 +115,7 @@ object SafeBot extends TelegramBot with Polling with Commands {
                   case Success(c)=>logger.debug(s"New conversation was created ${c.chatId}")
                   case Failure(e)=>logger.error(s"Cant create new conversation ${e}")
                 }
-              processMessage(msg, conversation,user.name)
+              processMessage(msg, conversation,user)
           }
         case Failure(f)=>
           MDC.put("UUID",uuid)
@@ -123,7 +123,7 @@ object SafeBot extends TelegramBot with Polling with Commands {
           val conversation:Conversation = new Conversation(msg.chat.id,"",true,
             new Timestamp(new Date().getTime),"","","","","","",
             usernameTelegram)
-          processMessage(msg, conversation,user.name)
+          processMessage(msg, conversation,user)
       }
     }catch {
       case e: Exception => reply("No pude encontrar tu usuario, favor de solicitar el registro en asigno")
@@ -137,7 +137,7 @@ object SafeBot extends TelegramBot with Polling with Commands {
     * Reply to user based on intent of message,
     * sends a request to NLP to know the user intent and after that uses the intent in a Rule engine to determine the correct answer
     * */
-  def processMessage(implicit msg:Message,conversation:Conversation,name:String): Unit ={
+  def processMessage(implicit msg:Message,conversation:Conversation,user:User): Unit ={
     msg.voice match {
       case Some(voice) =>
         logger.info(s"Download Telegram voice record ${voice.fileId}")
@@ -148,7 +148,7 @@ object SafeBot extends TelegramBot with Polling with Commands {
               case None => "Evidencia"
             }
             val comment:CommentView = CommentView(caption,OauthFactory.name,OauthFactory.username,"",getFilesFromMessage)
-            reply(getUserIntent(GoogleSpeechRecognition.recognizeSpeech(bytes),msg.chat.id,name,conversation,comment))
+            reply(getUserIntent(GoogleSpeechRecognition.recognizeSpeech(bytes),msg.chat.id,conversation,comment,user))
           case Failure(t)=>logger.error(s"Error trying to download audio from telegram ${t}")
         }
       case None =>
@@ -160,7 +160,7 @@ object SafeBot extends TelegramBot with Polling with Commands {
                 case None => "Evidencia"
               }
               val comment:CommentView = CommentView(caption,OauthFactory.name,OauthFactory.username,"",getFilesFromMessage)
-              reply(getUserIntent(text,msg.chat.id,name,conversation,comment))
+              reply(getUserIntent(text,msg.chat.id,conversation,comment,user))
             }
           case None =>
             if(conversation.currentContext.equals("wait_evidence")){
@@ -169,7 +169,7 @@ object SafeBot extends TelegramBot with Polling with Commands {
                 case None => "Evidencia"
               }
               val comment:CommentView = CommentView(caption,OauthFactory.name,OauthFactory.username,"",getFilesFromMessage)
-              reply(getUserIntent("",msg.chat.id,name,conversation,comment))
+              reply(getUserIntent("",msg.chat.id,conversation,comment,user))
             }
         }
     }
@@ -252,46 +252,30 @@ object SafeBot extends TelegramBot with Polling with Commands {
     *  @param msgText the message to process using an NLP to determine the intent
     *  @return Message to send as response to user
     * */
-  def getUserIntent(msgText:String,chatId:Long,name:String,conversation:Conversation,
-                    commentView: CommentView): String ={
+  def getUserIntent(msgText:String,chatId:Long,conversation:Conversation,
+                    commentView: CommentView,user:User): String ={
     logger.debug(s"Get user intent ${msgText}")
     var reply:String = ""
     if(!ignoredWords.contains(msgText)){
       val messageResponse = MessageResponse("", Map(),conversation,msgText,chatId,commentView,conversation.username)
       if(conversation.sendToNlpNext){//enviar a wit.ai
         val witResponse = WitAiProcessor.getIntents(msgText)
-        logger.info(s"Entities: \n ${witResponse}")
+        logger.info(s"NLP: \n ${witResponse}")
         reply = "In construction"
         messageResponse.entities = witResponse.entities.filterKeys(!_.equals("intent"))
-        val intent = witResponse.entities.get("intent")
-        intent match {
-          case Some(witIntents) =>
-            witIntents.foreach(intent=>{
-              messageResponse.intent = intent.value
-              val intentNode = AsignoKnowledgeManagerImpl.searchIntent(intent.value)
-              intentNode match {
-                case Some(i) =>
-                    if(i.intentType.equalsIgnoreCase("ask")){
-                      val rdfURI = AsignoKnowledgeManagerImpl.getRandomElement(i.hasAnswer)
-                      val answer = AsignoKnowledgeManagerImpl.getAnswer(rdfURI.toString)
-                      answer match {
-                        case Some(a)=>reply = a.value
-                        case None=>reply=s"Lo siento aun no puedo procesar tu peticion ${i.intentType}"
-                      }
-                    }else{
-                      reply = s"Intent: ${i.intentType} aun no es posible procesar"
-                    }
-                case None=>reply = "Lo siento aun no puedo procesar lo que me pides"
-              }
-            })
-          case None =>
-            reply = BotResponseEngine.determineBotResponse(messageResponse)
-        }
+        val nlpIntent = witResponse.entities.getOrElse("intent",List())
+        var intentNode:Intention = Intention("","",null)
+        if(nlpIntent.size>0)//solo si se tiene la intencion
+          intentNode = AsignoKnowledgeManagerImpl.searchIntent(nlpIntent.head.value).getOrElse(Intention("","",null))
+        val processIntention = ProcessIntention(user,intentNode,
+          conversation,witResponse.entities.filterKeys(!_.equals("intent")),
+          msgText,chatId)
+        reply = BotResponseEngine.determineResponse(processIntention)
       }else{
         reply = BotResponseEngine.determineBotResponse(messageResponse)
       }
     }
-    reply.replace("{name}",name)
+    reply.replace("{name}",user.name)
   }
 
   /**

@@ -10,6 +10,7 @@ import repository.model.{Conversation, ConversationDao, ConversationHistory, Con
 
 import scala.io.Source
 import net.liftweb.json.{DefaultFormats, parse}
+import sparql.AsignoKnowledgeManagerImpl
 /**
   * @author Victor de la Cruz
   * @version 1.0.0
@@ -45,6 +46,27 @@ object BotResponseEngine {
       process.chatId)
     ConversationHistoryDao.save(response)
     process.responseString
+  }
+
+  def determineResponse(process:ProcessIntention):String ={
+    val history = new ConversationHistory(0,process.intention.intentType,process.message,process.user.name,
+      "luky",new Timestamp(new Date().getTime),
+    process.chatId)
+    ConversationHistoryDao.save(history)
+    val session = Kie.newSession
+    logger.info(s"Sending data to rule engine - context: ${process.conversation.currentContext}")
+    session.insert(process)
+    session.addEventListener(new CustomAgendaEventListener())
+    session.fireAllRules()
+    session.dispose()
+    //update conversation with new values
+    val conversation:Conversation = process.conversation
+    ConversationDao.update(conversation)
+    //save response message
+    val response = new ConversationHistory(0,process.intention.intentType,process.answer,"luky",process.user.name,new Timestamp(new Date().getTime),
+      process.chatId)
+    ConversationHistoryDao.save(response)
+    process.answer
   }
 
   def loadIntentClassifications():List[IntentClassification] = {

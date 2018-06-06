@@ -1,10 +1,10 @@
 package org.vcgdev.supportctxbot
 
 import kie.MessageResponse;
+import kie.ProcessIntention
 import kie.Customer;
 import kie.TicketCreated;
 import kie.CommentCreated;
-
 rule "El usuario esta saludando"
     when $a:MessageResponse(intent()=="hello")
     then
@@ -148,4 +148,11 @@ rule "No se ha detectado problema"
          $a.saveNotClassified();
          //$a.sendNotClassifiedMail();
          $a.sendNextMessageToWit(false);
+     end
+//here start second trait,compiler error because not reconize scala case class, do not worry
+rule "Has result from ontology"
+    when $a:ProcessIntention(intention().intentType()=="ask")
+    then
+        //get posible values from SPARQL endpoint
+        $a.getAnswer();
      end
