@@ -8,7 +8,7 @@ import com.typesafe.config.ConfigFactory
 import com.typesafe.scalalogging.Logger
 import org.slf4j.LoggerFactory
 import org.w3.banana.jena.Jena
-import sparql.entities.{IssueCategory, User}
+import sparql.entities.{Intention, IssueCategory, User}
 
 import scala.util.{Failure, Random, Success, Try}
 
@@ -119,7 +119,7 @@ class AsignoKnowledgeManager[Rdf <: RDF](implicit
       c.intent,c.name,c.devSubcategoryId)).find(c=>c.intent.equals(intent))
   }
 
-  def searchIntent(intent: String):Option[Intent]={
+  def searchIntent(intent: String):Option[Intention]={
     val query = parseConstruct(s"$defaultPrefixes $intentURI CONSTRUCT {" +
       s"?individual ?p ?o" +
       s"} WHERE {" +
@@ -132,7 +132,8 @@ class AsignoKnowledgeManager[Rdf <: RDF](implicit
     resultGrap.triples.collect{
       case Triple(intent,rdf.`type`,intentPrefix.Intent)=>
         PointedGraph(intent,resultGrap).as[Intent].toOption
-    }.flatten.toList.find(s=>s.value.equals(intent))
+    }.flatten.toList
+      .map(i=>Intention(i.value,i.intentType,i.hasAnswer.toSet)).find(s=>s.value.equals(intent))
   }
 
   def getAnswer(iri:String):Option[Answer] = {
