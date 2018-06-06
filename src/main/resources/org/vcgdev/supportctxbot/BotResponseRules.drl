@@ -5,7 +5,7 @@ import kie.ProcessIntention
 import kie.Customer;
 import kie.TicketCreated;
 import kie.CommentCreated;
-rule "El usuario esta saludando"
+/*rule "El usuario esta saludando"
     when $a:MessageResponse(intent()=="hello")
     then
         $a.setResponse("Hola {name}, en que puedo ayudarte?");
@@ -148,11 +148,23 @@ rule "No se ha detectado problema"
          $a.saveNotClassified();
          //$a.sendNotClassifiedMail();
          $a.sendNextMessageToWit(false);
-     end
+     end*/
 //here start second trait,compiler error because not reconize scala case class, do not worry
-rule "Has result from ontology"
+//reducing hello,thanks and bye intents to this single rule
+rule "The intention is a single ask"
     when $a:ProcessIntention(intention().intentType()=="ask")
     then
         //get posible values from SPARQL endpoint
         $a.getAnswer();
+     end
+//from here the bot havre to navigate in the ontology to get responses
+rule "The intention is an entity"
+    when $a:ProcessIntention(intention().intentType()=="entity")
+    then
+        $a.getCategory();
+     end
+rule "Intention was not detected"
+    when $a:ProcessIntention(intention().intentType()=="")
+    then
+        $a.setAnswer("No puedo procesar lo que me pides, lo lamento");
      end

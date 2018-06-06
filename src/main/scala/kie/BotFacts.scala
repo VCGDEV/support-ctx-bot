@@ -10,7 +10,7 @@ import repository.model.{Conversation, IssueNotClassified, IssueNotClassifiedDao
 import wit.WitIntent
 import net.liftweb.json.Serialization.write
 import sparql.AsignoKnowledgeManagerImpl
-import sparql.entities.{Intention, OntologyAnswer, User}
+import sparql.entities.{Intention, IssueCategory, OntologyAnswer, User}
 
 import scala.beans.BeanInfo
 sealed trait BotFact
@@ -28,6 +28,18 @@ case class ProcessIntention(user:User,intention:Intention,conversation:Conversat
   def getAnswer() = {
     val rdfURI = AsignoKnowledgeManagerImpl.getRandomElement(intention.hasAnswer)
     answer = AsignoKnowledgeManagerImpl.getAnswer(rdfURI.toString).getOrElse(OntologyAnswer("")).value
+  }
+
+  def getCategory()={
+    val category = AsignoKnowledgeManagerImpl.getCategory(intention.value)
+    category match {
+      case Some(c)=>answer = s"Dare de alta un ticket de tipo: ${c.name}"
+      case None=>answer = "Aun no puedo procesar el problema que me presentas, solicitare capacitacion"
+    }
+  }
+
+  def setAnswer(answer:String): Unit ={
+    this.answer = answer
   }
 }
 /**
