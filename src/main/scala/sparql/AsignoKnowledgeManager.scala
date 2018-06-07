@@ -90,15 +90,20 @@ class AsignoKnowledgeManager[Rdf <: RDF](implicit
     implicit val binder = pgb[Answer](value)(Answer.apply,Answer.unapply)
   }
 
-  case class UserDO(name: String, email:String, id:String, hasPC:Rdf#URI)
+  case class UserDO(name:String, email:String, id:String, officePhone:Option[String],mobilePhone:Option[String],
+                    hasAddress:Option[Rdf#URI],isInCompany:Option[Rdf#URI],hasProperty:Set[Rdf#URI])
   object UserDO{
     val clazz = asigno.User
     implicit val classUris = classUrisFor[UserDO](clazz)
     val name = property[String](asigno.name)
     val email = property[String](asigno.email)
     val id = property[String](asigno.id)
-    val hasPC = property[Rdf#URI](asigno.hasPC)
-    implicit val binder = pgb[UserDO](name, email, id,hasPC)(UserDO.apply, UserDO.unapply)
+    val officePhone = optional[String](asigno.officePhone)
+    val mobilePhone = optional[String](asigno.mobilePhone)
+    val hasAddress = optional[Rdf#URI](asigno.hasAddress)
+    val isInCompany = optional[Rdf#URI](asigno.isInCompany)
+    val hasProperty = set[Rdf#URI](asigno.hasProperty)
+    implicit val binder = pgb[UserDO](name, email, id,officePhone,mobilePhone,hasAddress,isInCompany,hasProperty)(UserDO.apply, UserDO.unapply)
   }
 
   def getCategory(intent:String):Option[IssueCategory] = {
@@ -175,14 +180,13 @@ class AsignoKnowledgeManager[Rdf <: RDF](implicit
       "?individual ?p ?o .}").get
     val resultGraph = SPARQLEndpoint.executeConstruct(query).get
     resultGraph.triples.collect{
-      case Triple(user,rdf.`type`,asigno.Customer) =>
-        val pg = PointedGraph(user, resultGraph)
-        pg.as[UserDO].toOption
-      case Triple(user,rdf.typ,asigno.Technician)=>
-        val pg = PointedGraph(user,resultGraph)
-        pg.as[UserDO].toOption
-    }.flatten.toList.map(u=>User(u.name,u.email,u.id,u.hasPC))//TODO remove this mapping and extract  the UserDO to another file
-        .find(u=>u.id.equals(id))
+      case Triple(user,rdf.`type`,asigno.Employee) =>
+        val pg = PointedGraph(user, resultGraph).as[UserDO].get
+        User(pg.name,pg.email,pg.id,pg.officePhone.getOrElse(""),pg.mobilePhone.getOrElse(""),pg.hasAddress,pg.isInCompany,pg.hasProperty.toSet)
+      case Triple(user,rdf.`type`,asigno.Person)=>
+        val pg = PointedGraph(user,resultGraph).as[UserDO].get
+        User(pg.name,pg.email,pg.id,pg.officePhone.getOrElse(""),pg.mobilePhone.getOrElse(""),pg.hasAddress,pg.isInCompany,pg.hasProperty.toSet)
+    }.find(u=>u.id.equals(id))
   }
 }
 
