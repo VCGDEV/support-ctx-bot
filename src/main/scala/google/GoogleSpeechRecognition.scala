@@ -8,7 +8,6 @@ import com.typesafe.config.{Config, ConfigFactory}
 import org.apache.commons.codec.binary.Base64
 import com.stackmob.newman.dsl.{POST, _}
 import com.stackmob.newman.response.HttpResponseCode
-import com.typesafe.scalalogging.Logger
 import net.liftweb.json.{DefaultFormats, parse}
 import org.slf4j.LoggerFactory
 
@@ -24,7 +23,7 @@ object GoogleSpeechRecognition {
   val conf: Config = ConfigFactory.load
   //api key for google requests
   lazy val googleApiKey:String = conf.getString("application.google.token")
-  val logger = Logger(LoggerFactory.getLogger(GoogleSpeechRecognition.getClass))
+  val logger = LoggerFactory.getLogger(GoogleSpeechRecognition.getClass)
   implicit val formats: DefaultFormats.type = net.liftweb.json.DefaultFormats
 
   /**

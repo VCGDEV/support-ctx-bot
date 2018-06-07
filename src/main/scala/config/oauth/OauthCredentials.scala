@@ -7,7 +7,6 @@ import com.typesafe.config.{Config, ConfigFactory}
 import com.typesafe.scalalogging.Logger
 import net.liftweb.json._
 import org.apache.http.client.utils.URIBuilder
-import org.slf4j.LoggerFactory
 
 import scala.concurrent.Await
 import scala.concurrent.duration._
@@ -27,7 +26,6 @@ class OauthCredentials(var access_token:String,var refresh_token:String,var toke
   *  Object definition to send request at security microservice and make login, using oauth server
   * */
 object OauthFactory{
-  //security microservice configurations
   val conf: Config = ConfigFactory.load
   lazy val username:String = conf.getString("application.username")
   lazy val password:String = conf.getString("application.password")
@@ -36,7 +34,7 @@ object OauthFactory{
   lazy val oauthServerUrl:String = conf.getString("application.oauth.url")
   lazy val oauthGrantType:String = conf.getString("application.oauth.grant")
   private var _credentials : OauthCredentials = null
-  val logger = Logger(LoggerFactory.getLogger(OauthFactory.getClass))
+  val logger = Logger(OauthFactory.getClass)
 
   /**
     * Method to send a request to <strong>security</strong> microservice and login into app
@@ -44,7 +42,7 @@ object OauthFactory{
     * */
   def credentials():OauthCredentials = {
     if(_credentials==null){
-      logger.info("Send request to security service")
+      logger.debug("Send request to security service")
       implicit val httpClient: ApacheHttpClient = new ApacheHttpClient()
       val uri = new URIBuilder(oauthServerUrl)
         .addParameter("username",username)
@@ -58,7 +56,7 @@ object OauthFactory{
       implicit val formats: DefaultFormats.type = net.liftweb.json.DefaultFormats
       logger.debug(s"Response from URL ${uri.toString}  was: ${response.code} - content: ${response.bodyString}")
       if(response.code==HttpResponseCode.Ok){
-        logger.info("Success login to security service")
+        logger.debug("Success login to security service")
         _credentials = parse(response.bodyString).extract[OauthCredentials]
       }
       else

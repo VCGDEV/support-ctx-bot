@@ -4,6 +4,7 @@ import com.stackmob.newman.dsl.{GET, _}
 import com.typesafe.config.{Config, ConfigFactory}
 import net.liftweb.json.{DefaultFormats, parse}
 import org.apache.http.client.utils.URIBuilder
+import org.slf4j.LoggerFactory
 
 import scala.concurrent.Await
 import scala.concurrent.duration._
@@ -26,7 +27,7 @@ object WitAiProcessor {
   //default json format parser
   implicit val formats: DefaultFormats.type = net.liftweb.json.DefaultFormats
 
-
+  val logger = LoggerFactory.getLogger(WitAiProcessor.getClass)
   /**
     * Method to send request at <strong>https://wit.ai<strong>, using configurations from application.properties
     * a timeout is throw if the request exceeds 5 seconds
@@ -34,12 +35,12 @@ object WitAiProcessor {
     * @return WitResponse with entities and intent
     * */
   def getIntents(msgText:String): WitResponse ={
+    logger.info(s"Send request to :${witUrl} -  message: $msgText")
     implicit val httpClient: ApacheHttpClient = new ApacheHttpClient()
     val uri = new URIBuilder(witUrl).addParameter("v", s"$witVersion").addParameter("q", s"$msgText")
     val response = Await.result(GET(uri.build().toURL)
       .addHeaders("Authorization" -> witToken)
-      .addHeaders("Accept" -> "application/json").apply, 5.second) //this will throw if the response doesn't return within 5 second
-    //System.out.println(response.bodyString);
+      .addHeaders("Accept" -> "application/json").apply, 10.second) //this will throw if the response doesn't return within 5 second
     parse(response.bodyString).extract[WitResponse]
   }
 }

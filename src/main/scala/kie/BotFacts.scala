@@ -4,11 +4,13 @@ import java.util.Date
 
 import asigno._
 import bot.IntentClassification
+import mail.MailService
 import net.liftweb.json.DefaultFormats
 import repository.model.{Conversation, IssueNotClassified, IssueNotClassifiedDao}
 import wit.WitIntent
-import net.liftweb.json._
 import net.liftweb.json.Serialization.write
+import sparql.AsignoKnowledgeManagerImpl
+import sparql.entities.{Intention, IssueCategory, OntologyAnswer, User}
 
 import scala.beans.BeanInfo
 sealed trait BotFact
@@ -16,13 +18,38 @@ class BotFacts {
 
 }
 
+case class Customer(isInAsigno:Boolean)
+case class TicketCreated(isCreated:Boolean,folio:String)
+case class CommentCreated(isCreated:Boolean)
+@BeanInfo
+case class ProcessIntention(user:User,intention:Intention,conversation:Conversation,
+                            entities:Map[String,List[WitIntent]],message:String,chatId:Long){
+  var answer:String = ""
+  def getAnswer() = {
+    val rdfURI = AsignoKnowledgeManagerImpl.getRandomElement(intention.hasAnswer)
+    answer = AsignoKnowledgeManagerImpl.getAnswer(rdfURI.toString).getOrElse(OntologyAnswer("")).value
+  }
+
+  def getCategory()={
+    val category = AsignoKnowledgeManagerImpl.getCategory(intention.value)
+    category match {
+      case Some(c)=>answer = s"Dare de alta un ticket de tipo: ${c.name}"
+      case None=>answer = "Aun no puedo procesar el problema que me presentas, solicitare capacitacion"
+    }
+  }
+
+  def setAnswer(answer:String): Unit ={
+    this.answer = answer
+  }
+}
 /**
   * @author Victor de la Cruz
   * @version 1.0.0
   * Class definition to manage intent and the entities to process in rule engine
   * */
 @BeanInfo
-case class MessageResponse(var intent:String,var entities:Map[String,List[WitIntent]],var conversation:Conversation, val message:String,val chatId:Long) extends BotFact{
+case class MessageResponse(var intent:String,var entities:Map[String,List[WitIntent]],var conversation:Conversation, val message:String,val chatId:Long,
+                           val commentView: CommentView,val username:String) extends BotFact{
   var responseString:String = ""
   var classification:IntentClassification = null
   var customerView:CustomerView=null
@@ -50,6 +77,7 @@ case class MessageResponse(var intent:String,var entities:Map[String,List[WitInt
     this.conversation.category = ""
     this.conversation.subcategory = ""
     this.conversation.customer = ""
+    this.conversation.ticketId = ""
   }
   def findFirstEntityValue(key:String) : String = {
     if(this.entities.contains(key)){
@@ -70,10 +98,14 @@ case class MessageResponse(var intent:String,var entities:Map[String,List[WitInt
     this.customerView == null
   }
 
-  def createTicket():Boolean = {
+  //2 productivo
+  //28 pruebas
+  def createTicket():String = {
     val ticket = Ticket(new Date().getTime,customerData(),List(),TicketType(28),
       TicketCategory(conversation.subcategory,conversation.category),conversation.summary,conversation.description)
-    AsignoRestClient.createTicket(ticket)
+    val ticketId = AsignoRestClient.createTicket(ticket)
+    conversation.ticketId = ticketId
+    ticketId
   }
 
   def customerData():CustomerData = {
@@ -100,4 +132,14 @@ case class MessageResponse(var intent:String,var entities:Map[String,List[WitInt
     IssueNotClassifiedDao.save(issue)
   }
 
+  def sendNotClassifiedMail(): Unit ={
+    val mailService = new MailService
+    mailService.sendMail(List("vcruz@amentum.net"),"Elemento sin clasificar",message)
+  }
+
+  def sendComment():Boolean = {
+    AsignoRestClient.sendComment(conversation.ticketId,commentView)
+  }
+
+  def hasAttachments():Boolean = this.commentView.attachments.size>0
 }

@@ -1,26 +1,34 @@
 package kie
-import bot.{IntentClassification}
-import com.typesafe.scalalogging.Logger
+import java.sql.Timestamp
+import java.util.Date
+
+import bot.IntentClassification
 import config.logger.CustomAgendaEventListener
+import mail.MailService
 import org.slf4j.LoggerFactory
-import repository.model.{Conversation, ConversationDao}
+import repository.model.{Conversation, ConversationDao, ConversationHistory, ConversationHistoryDao}
 
 import scala.io.Source
 import net.liftweb.json.{DefaultFormats, parse}
+import sparql.AsignoKnowledgeManagerImpl
 /**
   * @author Victor de la Cruz
   * @version 1.0.0
   * Object definition to fire rules
   * */
 object BotResponseEngine {
-  val logger = Logger(LoggerFactory.getLogger(BotResponseEngine.getClass))
+  val logger = LoggerFactory.getLogger(BotResponseEngine.getClass)
   val classifications = loadIntentClassifications()
-
+  val mailService = new MailService
   /**
     *  Fire rules to obtain bot response
     *  @param process the response to process in the rules
     * */
   def determineBotResponse(process:MessageResponse): String = {
+    //save incoming message, for history
+    val history = new ConversationHistory(0,process.intent,process.message,process.username,"luky",new Timestamp(new Date().getTime),
+      process.chatId)
+    ConversationHistoryDao.save(history)
     val session = Kie.newSession
     logger.info(s"Sending data to rule engine - context: ${process.conversation.currentContext}")
     val classFind = classifications.find(c => c.tag == process.intent)
@@ -29,10 +37,36 @@ object BotResponseEngine {
     session.insert(process)
     session.addEventListener(new CustomAgendaEventListener())
     session.fireAllRules()
+    session.dispose()
     //update conversation with new values
     val conversation:Conversation = process.conversation
     ConversationDao.update(conversation)
+    //save response message
+    val response = new ConversationHistory(0,process.intent,process.responseString,"luky",process.username,new Timestamp(new Date().getTime),
+      process.chatId)
+    ConversationHistoryDao.save(response)
     process.responseString
+  }
+
+  def determineResponse(process:ProcessIntention):String ={
+    val history = new ConversationHistory(0,process.intention.intentType,process.message,process.user.name,
+      "luky",new Timestamp(new Date().getTime),
+    process.chatId)
+    ConversationHistoryDao.save(history)
+    val session = Kie.newSession
+    logger.info(s"Sending data to rule engine - context: ${process.conversation.currentContext}")
+    session.insert(process)
+    session.addEventListener(new CustomAgendaEventListener())
+    session.fireAllRules()
+    session.dispose()
+    //update conversation with new values
+    val conversation:Conversation = process.conversation
+    ConversationDao.update(conversation)
+    //save response message
+    val response = new ConversationHistory(0,process.intention.intentType,process.answer,"luky",process.user.name,new Timestamp(new Date().getTime),
+      process.chatId)
+    ConversationHistoryDao.save(response)
+    process.answer
   }
 
   def loadIntentClassifications():List[IntentClassification] = {

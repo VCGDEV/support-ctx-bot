@@ -122,7 +122,7 @@
   {
     "tag":"servers_hardware",
     "mainCategoryId":"104",
-    "categoryId":""
+    "categoryId":"107"
   },
   {
     "tag":"server_os",
@@ -158,5 +158,10 @@
     "tag":"telephony_configuration",
     "mainCategoryId":"112",
     "categoryId":"118"
+  },
+  {
+    "tag":"",
+    "mainCategoryId":"",
+    "categoryId":"123"
   }
 ]
