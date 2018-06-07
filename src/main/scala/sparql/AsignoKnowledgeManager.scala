@@ -106,6 +106,18 @@ class AsignoKnowledgeManager[Rdf <: RDF](implicit
     implicit val binder = pgb[UserDO](name, email, id,officePhone,mobilePhone,hasAddress,isInCompany,hasProperty)(UserDO.apply, UserDO.unapply)
   }
 
+  case class CompanyDO(name:String,entityType:String,hasAddress:Option[RDF#URI],hasProperty:Set[RDF#URI])
+
+  object CompanyDO{
+    val clazz = asigno.Company
+    implicit  val classUris = classUrisFor[CompanyDO](clazz)
+    val name = property[String](asigno.name)
+    val entityType = property[String](asigno.entityType)
+    val hasAddress = optional[Rdf#URI](asigno.hasAddress)
+    val hasProperty = set[Rdf#URI](asigno.hasProperty)
+    implicit val binder = pgb[CompanyDO](name,entityType,hasAddress,hasProperty)(CompanyDO.apply,CompanyDO.unapply)
+  }
+
   def getCategory(intent:String):Option[IssueCategory] = {
     val query = parseConstruct(s"$defaultPrefixes $issueURI CONSTRUCT {" +
       s"?individual ?p ?o} WHERE {" +
