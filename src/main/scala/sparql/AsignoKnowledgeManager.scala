@@ -12,29 +12,42 @@ import sparql.entities.{Intention, IssueCategory, OntologyAnswer, User}
 
 import scala.util.{Failure, Random, Success, Try}
 
-class AsignoKnowledgeManager[Rdf <: RDF](implicit
-                                ops: RDFOps[Rdf],
-                                sparqlOps: SparqlOps[Rdf],
-                                sparqlHttp: SparqlEngine[Rdf, Try, URL],
-                                recordBinder: RecordBinder[Rdf]
-                               ) {
-  import ops._
-  import recordBinder._
-  import sparqlOps._
-  import sparqlHttp.sparqlEngineSyntax._
-  lazy val config = ConfigFactory.load
-  val SPARQLEndpoint = new URL(config.getString("sparql.config.url"))//query to this endpoint
-  val logger = Logger(LoggerFactory.getLogger("AsignoKnowledgeManager"))
-  val asigno = AsignoOntologyPrefix[Rdf]
-  val issuePrefix = IssueOntologyPrefix[Rdf]
-  val intentPrefix = IntentPrefix[Rdf]
+trait OntologyKnowledge{
   val defaultPrefixes ="PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> " +
     "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> " +
     "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>"
   val asignoURI = "PREFIX asn: <http://www.apps.inbyte.mx/vcruz/ontologies/2018/4/asigno#>"
   val issueURI = "PREFIX  iss:  <http://www.inbyte.semantic/lucy/ontologies/2018/5/issues#>"
   val intentURI = "PREFIX ipx: <http://www.inbyte.semantic/lucy/ontologies/2018/5/knowledge#>"
+  lazy val config = ConfigFactory.load
+  val SPARQLEndpoint = new URL(config.getString("sparql.config.url"))//query to this endpoint
 
+  /**
+    * Take a random element from possible responses array
+    *  @param list a sequence of posible arrays
+    *  @return message response
+    * */
+  def getRandomElement(list: Set[RDF#URI]): RDF#URI= {
+    val random = new Random(System.currentTimeMillis())
+    val index = random.nextInt(list.size)
+    list.toList(index)
+  }
+}
+
+class AsignoKnowledgeManager[Rdf <: RDF](implicit
+                                ops: RDFOps[Rdf],
+                                sparqlOps: SparqlOps[Rdf],
+                                sparqlHttp: SparqlEngine[Rdf, Try, URL],
+                                recordBinder: RecordBinder[Rdf]
+                               ) extends OntologyKnowledge {
+  import ops._
+  import recordBinder._
+  import sparqlOps._
+  import sparqlHttp.sparqlEngineSyntax._
+  val logger = Logger(LoggerFactory.getLogger("AsignoKnowledgeManager"))
+  val asigno = AsignoOntologyPrefix[Rdf]
+  val issuePrefix = IssueOntologyPrefix[Rdf]
+  val intentPrefix = IntentPrefix[Rdf]
   object LongBinder{
     implicit val LongToLiteral = new ToLiteral[Rdf,Long] {
       def toLiteral(t: Long): Rdf#Literal = Literal(t.toString,xsd.long)
@@ -55,6 +68,8 @@ class AsignoKnowledgeManager[Rdf <: RDF](implicit
       }
     }
   }
+
+  //TODO move this classes to another files ---->
   case class Category(categoryId:Long,devCategoryId:Long,value:String,subcategoryId:Long,
                       intent:String,name:String,devSubcategoryId:Long)
 
@@ -79,7 +94,7 @@ class AsignoKnowledgeManager[Rdf <: RDF](implicit
     val intentType = property[String](intentPrefix.intentType)
     val value = property[String](intentPrefix.value)
     val hasAnswer = set[Rdf#URI](intentPrefix.hasAnswer)
-    implicit val bincer = pgb[Intent](intentType,value,hasAnswer)(Intent.apply,Intent.unapply)
+    implicit val binder = pgb[Intent](intentType,value,hasAnswer)(Intent.apply,Intent.unapply)
   }
 
   case class Answer(value:String)
@@ -93,8 +108,7 @@ class AsignoKnowledgeManager[Rdf <: RDF](implicit
   case class UserDO(name:String, email:String, id:String, officePhone:Option[String],mobilePhone:Option[String],
                     hasAddress:Option[Rdf#URI],isInCompany:Option[Rdf#URI],hasProperty:Set[Rdf#URI])
   object UserDO{
-    val clazz = asigno.User
-    implicit val classUris = classUrisFor[UserDO](clazz)
+    implicit val classUris = classUrisFor[UserDO](asigno.User)
     val name = property[String](asigno.name)
     val email = property[String](asigno.email)
     val id = property[String](asigno.id)
@@ -106,16 +120,33 @@ class AsignoKnowledgeManager[Rdf <: RDF](implicit
     implicit val binder = pgb[UserDO](name, email, id,officePhone,mobilePhone,hasAddress,isInCompany,hasProperty)(UserDO.apply, UserDO.unapply)
   }
 
-  case class CompanyDO(name:String,entityType:String,hasAddress:Option[RDF#URI],hasProperty:Set[RDF#URI])
+  case class CompanyDO(name:String,entityType:String,hasAddress:Option[Rdf#URI],hasProperty:Set[Rdf#URI])
 
   object CompanyDO{
-    val clazz = asigno.Company
-    implicit  val classUris = classUrisFor[CompanyDO](clazz)
+    implicit  val classUris = classUrisFor[CompanyDO](asigno.Company)
     val name = property[String](asigno.name)
     val entityType = property[String](asigno.entityType)
     val hasAddress = optional[Rdf#URI](asigno.hasAddress)
     val hasProperty = set[Rdf#URI](asigno.hasProperty)
     implicit val binder = pgb[CompanyDO](name,entityType,hasAddress,hasProperty)(CompanyDO.apply,CompanyDO.unapply)
+  }
+
+  case class AddressDO(government:String,postalCode:String,country:String,city:String,numInt:Option[String],
+                     adjacent1:Option[String],adjacent2:Option[String],
+                     numExt:Option[String],street:String)
+
+  object AddressDO{
+    implicit val classUris = classUrisFor[AddressDO](asigno.Address)
+    val government = property[String](asigno.government)
+    val postalCode = property[String](asigno.postalCode)
+    val country = property[String](asigno.country)
+    val city = property[String](asigno.city)
+    val numInt = optional[String](asigno.numInt)
+    val adjacent1 = optional[String](asigno.adjacentStreet1)
+    val adjacent2 = optional[String](asigno.adjacentStreet2)
+    val numExt = optional[String](asigno.numExt)
+    val street = property[String](asigno.street)
+    implicit val binder = pgb[AddressDO](government,postalCode,country,city,numInt,adjacent1,adjacent2,numExt,street)(AddressDO.apply,AddressDO.unapply)
   }
 
   def getCategory(intent:String):Option[IssueCategory] = {
@@ -166,17 +197,6 @@ class AsignoKnowledgeManager[Rdf <: RDF](implicit
       Some(answers.head)
     else
       None
-  }
-
-  /**
-    * Take a random element from possible responses array
-    *  @param list a sequence of posible arrays
-    *  @return message response
-    * */
-  def getRandomElement(list: Set[RDF#URI]): RDF#URI= {
-    val random = new Random(System.currentTimeMillis());
-    val index = random.nextInt(list.size)
-    list.toList(index)
   }
 
   //this has to be the only harcoded query, construct graph after this and navigate according to user issue
