@@ -20,5 +20,5 @@ object VisitedNodeDao extends TableQuery(new VisitedNodeTable(_)) with JdbcConne
     db.run(q)
   }
 
-  
+
 }

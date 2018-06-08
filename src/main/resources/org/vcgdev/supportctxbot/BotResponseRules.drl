@@ -154,14 +154,15 @@ rule "No se ha detectado problema"
 rule "The intention is a single ask"
     when $a:ProcessIntention(intention().intentType()=="ask")
     then
-        //get posible values from SPARQL endpoint
-        $a.getAnswer();
+        $a.findAnswer();
      end
 //from here the bot havre to navigate in the ontology to get responses
 rule "The intention is an entity"
     when $a:ProcessIntention(intention().intentType()=="entity")
     then
-        $a.getCategory();
+       $a.setAnswer("Por favor ingresa una breve descripcion del problema");
+       $a.searchMainNode();
+       //save main node, got to graph and navigate :D
      end
 rule "Intention was not detected"
     when $a:ProcessIntention(intention().intentType()=="")
