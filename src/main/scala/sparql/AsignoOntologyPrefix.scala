@@ -44,6 +44,7 @@ class AsignoOntologyPrefix[Rdf <: RDF](ops: RDFOps[Rdf]) extends PrefixBuilder("
   val Property = apply("Property")
   val value = apply("value")
   val entityType = apply("type")
+  val action = apply("action")
 }
 
 class IssuePrefix[Rdf <: RDF](ops: RDFOps[Rdf]) extends PrefixBuilder("iss","http://www.inbyte.semantic/lucy/ontologies/2018/5/issues#")(ops){

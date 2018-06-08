@@ -8,7 +8,7 @@ import com.typesafe.config.ConfigFactory
 import com.typesafe.scalalogging.Logger
 import org.slf4j.LoggerFactory
 import org.w3.banana.jena.Jena
-import sparql.entities.{Intention, IssueCategory, OntologyAnswer, User}
+import sparql.entities._
 
 import scala.util.{Failure, Random, Success, Try}
 
@@ -87,7 +87,9 @@ class AsignoKnowledgeManager[Rdf <: RDF](implicit
       subcategoryId,intent,name,devSubcategoryId)(Category.apply,Category.unapply)
   }
 
-  case class Intent(intentType:String,value:String,hasAnswer:Set[Rdf#URI])
+  case class Intent(intentType:String,value:String,hasAnswer:Set[Rdf#URI]){
+    def toObject():Intention = Intention(intentType,value,hasAnswer.toSet)
+  }
 
   object Intent{
     val clazz = intentPrefix.Intent
@@ -97,7 +99,9 @@ class AsignoKnowledgeManager[Rdf <: RDF](implicit
     implicit val binder = pgb[Intent](intentType,value,hasAnswer)(Intent.apply,Intent.unapply)
   }
 
-  case class Answer(value:String)
+  case class Answer(value:String){
+    def toObject():OntologyAnswer = OntologyAnswer(value)
+  }
 
   object Answer{
     val clazz = intentPrefix.Answer
@@ -106,7 +110,9 @@ class AsignoKnowledgeManager[Rdf <: RDF](implicit
   }
 
   case class UserDO(name:String, email:String, id:String, officePhone:Option[String],mobilePhone:Option[String],
-                    hasAddress:Option[Rdf#URI],isInCompany:Option[Rdf#URI],hasProperty:Set[Rdf#URI])
+                    hasAddress:Option[Rdf#URI],isInCompany:Option[Rdf#URI],hasProperty:Set[Rdf#URI]){
+    def toObject:User = User(name,email,id,officePhone.getOrElse(""),mobilePhone.getOrElse(""),hasAddress,isInCompany,hasProperty.toSet)
+  }
   object UserDO{
     implicit val classUris = classUrisFor[UserDO](asigno.User)
     val name = property[String](asigno.name)
@@ -149,6 +155,32 @@ class AsignoKnowledgeManager[Rdf <: RDF](implicit
     implicit val binder = pgb[AddressDO](government,postalCode,country,city,numInt,adjacent1,adjacent2,numExt,street)(AddressDO.apply,AddressDO.unapply)
   }
 
+  //generic entity
+  case class PropertyDO(propertyType:String,value:String,action:Option[String],hasProperty:Set[Rdf#URI]){
+    def toObject():NodeProperty = NodeProperty(propertyType,value,action,hasProperty.toSet)
+  }
+
+  object PropertyDO{
+    implicit val classUris = classUrisFor[PropertyDO](asigno.Property)
+    val propertyType = property[String](asigno.action)
+    val value = property[String](asigno.value)
+    val action = optional[String](asigno.action)
+    val hasProperty = set[Rdf#URI](asigno.hasProperty)
+    implicit val binder = pgb[PropertyDO](propertyType,value,action,hasProperty)(PropertyDO.apply,PropertyDO.unapply)
+  }
+
+  def getPropertyByUri(propertyURI:String):Option[entities.NodeProperty]= {
+    val query = parseConstruct(s"$defaultPrefixes $asignoURI CONSTRUCT {" +
+      s"<$propertyURI> ?predicate ?object " +
+      s"} WHERE {<$propertyURI> ?predicate ?object}").get
+    val graph = SPARQLEndpoint.executeConstruct(query).get
+    val properties:Iterable[entities.NodeProperty] = graph.triples.collect{
+      case Triple(answer,rdf.`type`,intentPrefix.Answer)=>
+        PointedGraph(answer,graph).as[PropertyDO].get.toObject
+    }
+    properties.headOption
+  }
+
   def getCategory(intent:String):Option[IssueCategory] = {
     val query = parseConstruct(s"$defaultPrefixes $issueURI CONSTRUCT {" +
       s"?individual ?p ?o} WHERE {" +
@@ -163,7 +195,7 @@ class AsignoKnowledgeManager[Rdf <: RDF](implicit
         val c = PointedGraph(category,resultGraph).as[Category].get
         IssueCategory(c.categoryId,c.devCategoryId,c.value,c.subcategoryId,
           c.intent,c.name,c.devSubcategoryId)
-    }.find(c=>c.intent.equals(intent))
+    }.headOption
   }
 
   def searchIntent(intent: String):Option[Intention]={
@@ -178,9 +210,8 @@ class AsignoKnowledgeManager[Rdf <: RDF](implicit
     val resultGrap = SPARQLEndpoint.executeConstruct(query).get
     resultGrap.triples.collect{
       case Triple(intent,rdf.`type`,intentPrefix.Intent)=>
-        val int_ = PointedGraph(intent,resultGrap).as[Intent].get
-        Intention(int_.intentType,int_.value,int_.hasAnswer.toSet)
-    }.find(p=>p.value.equals(intent))
+        PointedGraph(intent,resultGrap).as[Intent].get.toObject
+    }.headOption
   }
 
   def getAnswer(iri:String):Option[OntologyAnswer] = {
@@ -188,15 +219,10 @@ class AsignoKnowledgeManager[Rdf <: RDF](implicit
       s"<$iri> ?predicate ?object " +
       s"} WHERE {<$iri> ?predicate ?object}").get
     val graph = SPARQLEndpoint.executeConstruct(query).get
-    val answers:Iterable[OntologyAnswer] = graph.triples.collect{
+    graph.triples.collect{
       case Triple(answer,rdf.`type`,intentPrefix.Answer)=>
-        val a_ = PointedGraph(answer,graph).as[Answer].get
-        OntologyAnswer(a_.value)
-    }
-    if(answers.size>0)
-      Some(answers.head)
-    else
-      None
+        PointedGraph(answer,graph).as[Answer].get.toObject
+    }.headOption
   }
 
   //this has to be the only harcoded query, construct graph after this and navigate according to user issue
@@ -213,12 +239,10 @@ class AsignoKnowledgeManager[Rdf <: RDF](implicit
     val resultGraph = SPARQLEndpoint.executeConstruct(query).get
     resultGraph.triples.collect{
       case Triple(user,rdf.`type`,asigno.Employee) =>
-        val pg = PointedGraph(user, resultGraph).as[UserDO].get
-        User(pg.name,pg.email,pg.id,pg.officePhone.getOrElse(""),pg.mobilePhone.getOrElse(""),pg.hasAddress,pg.isInCompany,pg.hasProperty.toSet)
+        PointedGraph(user, resultGraph).as[UserDO].get.toObject
       case Triple(user,rdf.`type`,asigno.Person)=>
-        val pg = PointedGraph(user,resultGraph).as[UserDO].get
-        User(pg.name,pg.email,pg.id,pg.officePhone.getOrElse(""),pg.mobilePhone.getOrElse(""),pg.hasAddress,pg.isInCompany,pg.hasProperty.toSet)
-    }.find(u=>u.id.equals(id))
+        PointedGraph(user,resultGraph).as[UserDO].get.toObject
+    }.headOption
   }
 }
 
