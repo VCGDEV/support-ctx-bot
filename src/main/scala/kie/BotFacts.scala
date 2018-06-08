@@ -4,13 +4,15 @@ import java.util.Date
 
 import asigno._
 import bot.IntentClassification
+import com.typesafe.scalalogging.Logger
 import mail.MailService
 import net.liftweb.json.DefaultFormats
-import repository.model.{Conversation, IssueNotClassified, IssueNotClassifiedDao}
+import repository.model.{Conversation, IssueNotClassified, IssueNotClassifiedDao, OntologyContextDao}
 import wit.WitIntent
 import net.liftweb.json.Serialization.write
+import org.slf4j.LoggerFactory
 import sparql.AsignoKnowledgeManagerImpl
-import sparql.entities.{Intention, IssueCategory, OntologyAnswer, User}
+import sparql.entities._
 
 import scala.beans.BeanInfo
 sealed trait BotFact
@@ -24,8 +26,9 @@ case class CommentCreated(isCreated:Boolean)
 @BeanInfo
 case class ProcessIntention(user:User,intention:Intention,conversation:Conversation,
                             entities:Map[String,List[WitIntent]],message:String,chatId:Long){
+  val logger = Logger(LoggerFactory.getLogger(ProcessIntention.getClass))
   var answer:String = ""
-  def getAnswer() = {
+  def findAnswer() = {
     val rdfURI = AsignoKnowledgeManagerImpl.getRandomElement(intention.hasAnswer)
     answer = AsignoKnowledgeManagerImpl.getAnswer(rdfURI.toString).getOrElse(OntologyAnswer("")).value
   }
@@ -35,6 +38,29 @@ case class ProcessIntention(user:User,intention:Intention,conversation:Conversat
     category match {
       case Some(c)=>answer = s"Dare de alta un ticket de tipo: ${c.name}"
       case None=>answer = "Aun no puedo procesar el problema que me presentas, solicitare capacitacion"
+    }
+  }
+
+  def searchMainNode():Unit = {
+    val ontologyContext = OntologyContextDao.findActiveContext(chatId);
+    //here we have to search the node of graph where the magic starts
+    ontologyContext match {
+      case Some(o)=>answer = s"Current context ${o.mainNode} - ${o.currentNode}"
+      case None=>
+        val category = AsignoKnowledgeManagerImpl.getCategory(intention.value)
+        category match {
+          case Some(c)=>
+            var nodes:List[NodeProperty] = List()
+            user.hasProperty.foreach(h=>nodes = nodes ::: AsignoKnowledgeManagerImpl.hasProperty(h.toString,c.value))
+            logger.info("{}",nodes)
+            if(nodes.isEmpty) {
+              logger.info("There are no main node in user Entity, searching in company")
+              nodes = AsignoKnowledgeManagerImpl.hasProperty(user.isInCompany.get.toString, c.value)
+              logger.info("{}",nodes)
+              nodes.foreach(n=>answer = answer.concat(s"\n ${n.name}"))
+            }
+          case None=>logger.info("There are no category . bot is not trained to answer this")
+        }
     }
   }
 

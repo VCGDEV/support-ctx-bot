@@ -156,23 +156,25 @@ class AsignoKnowledgeManager[Rdf <: RDF](implicit
   }
 
   //generic entity
-  case class PropertyDO(propertyType:String,value:String,action:Option[String],hasProperty:Set[Rdf#URI]){
-    def toObject():NodeProperty = NodeProperty(propertyType,value,action,hasProperty.toSet)
+  case class PropertyDO(name:Option[String],propertyType:String,value:String,action:Option[String],hasProperty:Set[Rdf#URI]){
+    def toObject():NodeProperty = NodeProperty(name.getOrElse(""),propertyType,value,action,hasProperty.toSet)
   }
 
   object PropertyDO{
     implicit val classUris = classUrisFor[PropertyDO](asigno.Property)
-    val propertyType = property[String](asigno.action)
+    val name = optional[String](asigno.name)
+    val propertyType = property[String](asigno.entityType)
     val value = property[String](asigno.value)
     val action = optional[String](asigno.action)
     val hasProperty = set[Rdf#URI](asigno.hasProperty)
-    implicit val binder = pgb[PropertyDO](propertyType,value,action,hasProperty)(PropertyDO.apply,PropertyDO.unapply)
+    implicit val binder = pgb[PropertyDO](name,propertyType,value,action,hasProperty)(PropertyDO.apply,PropertyDO.unapply)
   }
 
   def getPropertyByUri(propertyURI:String):Option[entities.NodeProperty]= {
     val query = parseConstruct(s"$defaultPrefixes $asignoURI CONSTRUCT {" +
       s"<$propertyURI> ?predicate ?object " +
       s"} WHERE {<$propertyURI> ?predicate ?object}").get
+    logger.info(s"\n${query.toString}")
     val graph = SPARQLEndpoint.executeConstruct(query).get
     val properties:Iterable[entities.NodeProperty] = graph.triples.collect{
       case Triple(answer,rdf.`type`,intentPrefix.Answer)=>
@@ -212,6 +214,39 @@ class AsignoKnowledgeManager[Rdf <: RDF](implicit
       case Triple(intent,rdf.`type`,intentPrefix.Intent)=>
         PointedGraph(intent,resultGrap).as[Intent].get.toObject
     }.headOption
+  }
+
+  def findProperty(value:String):Set[NodeProperty] = {
+    val query = parseConstruct(s"$defaultPrefixes $asignoURI CONSTRUCT {" +
+      s"?individual ?p ?o" +
+      s"} WHERE {" +
+      s"?individual rdf:type asn:Property." +
+      s"?individual asn:value ?value." +
+      s"FILTER(?value='$value'^^xsd:string)." +
+      s"?individual ?p ?o" +
+      s"}").get
+    val graph = SPARQLEndpoint.executeConstruct(query).get
+    graph.triples.collect{
+      case Triple(n,rdf.`type`,asigno.Property)=>
+        PointedGraph(n,graph).as[PropertyDO].get.toObject
+    }.toSet
+  }
+
+  //use this to find main nodes
+  def hasProperty(mainNode:String,entity:String):List[NodeProperty] = {
+    val query = parseConstruct(s"$defaultPrefixes $asignoURI CONSTRUCT{" +
+      s"?prop ?p ?o}WHERE{" +
+      s"<$mainNode> ?pr ?obj." +
+      s"<$mainNode> asn:hasProperty ?prop." +
+      s"?prop asn:value ?value." +
+      s"FILTER(?value='$entity'^^xsd:string)." +
+      s"?prop ?p ?o" +
+      s"}").get
+    val graph = SPARQLEndpoint.executeConstruct(query).get
+    graph.triples.collect{
+      case Triple(p,rdf.`type`,asigno.Property)=>
+        PointedGraph(p,graph).as[PropertyDO].get.toObject
+    }.toList
   }
 
   def getAnswer(iri:String):Option[OntologyAnswer] = {
