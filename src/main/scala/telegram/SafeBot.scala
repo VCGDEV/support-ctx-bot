@@ -62,9 +62,7 @@ object SafeBot extends TelegramBot with Polling with Commands {
 
   onCommand("clean"){implicit msg =>
     logger.info("Clean current context from bot")
-    ConversationDao.findById(msg.chat.id).onComplete{
-      case Success(s)=>
-        s match {
+    ConversationDao.findById(msg.chat.id) match {
           case Some(c)=>
             c.summary = ""
             c.category = ""
@@ -77,9 +75,6 @@ object SafeBot extends TelegramBot with Polling with Commands {
           case None=>
            reply("No existe proceso a cancelar")
         }
-      case Failure(f)=>
-        reply("No fue posible seleccionar el proceso a ancelar")
-    }
   }
 
 
@@ -98,10 +93,7 @@ object SafeBot extends TelegramBot with Polling with Commands {
     ///search user in knwoledge base
     try {
       val user = AsignoKnowledgeManagerImpl.getUser(msg.chat.id.toString).getOrElse(throw new Exception("No user was found"))
-      ConversationDao.findById(msg.chat.id).onComplete{
-        case Success(s)=>
-          MDC.put("UUID",uuid)
-          s match {
+      ConversationDao.findById(msg.chat.id) match {
             case Some(c)=>
               logger.info("Luky has a previous conversation with : {}",user.name)
               processMessage(msg,c,user)
@@ -117,14 +109,6 @@ object SafeBot extends TelegramBot with Polling with Commands {
                 }
               processMessage(msg, conversation,user)
           }
-        case Failure(f)=>
-          MDC.put("UUID",uuid)
-          logger.error("Error al obtener conversacion",f)
-          val conversation:Conversation = new Conversation(msg.chat.id,"",true,
-            new Timestamp(new Date().getTime),"","","","","","",
-            usernameTelegram)
-          processMessage(msg, conversation,user)
-      }
     }catch {
       case e: Exception => reply("No pude encontrar tu usuario, favor de solicitar el registro en asigno")
         logger.error("An error ocurred in users select",e)
