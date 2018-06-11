@@ -16,57 +16,46 @@ import sparql.entities._
 
 import scala.beans.BeanInfo
 sealed trait BotFact
-class BotFacts {
-
-}
 
 case class Customer(isInAsigno:Boolean)
 case class TicketCreated(isCreated:Boolean,folio:String)
 case class CommentCreated(isCreated:Boolean)
 @BeanInfo
 case class ProcessIntention(user:User,intention:Intention,conversation:Conversation,
-                            entities:Map[String,List[WitIntent]],message:String,chatId:Long){
+                            entities:Map[String,List[WitIntent]],message:String,chatId:Long) extends BotFact {
   val logger = Logger(LoggerFactory.getLogger(ProcessIntention.getClass))
   var answer:String = ""
+  var mainNodes:List[NodeProperty] = List()
+  var category:IssueCategory = null
   def findAnswer() = {
     val rdfURI = AsignoKnowledgeManagerImpl.getRandomElement(intention.hasAnswer)
     answer = AsignoKnowledgeManagerImpl.getAnswer(rdfURI.toString).getOrElse(OntologyAnswer("")).value
   }
-
-  def getCategory()={
-    val category = AsignoKnowledgeManagerImpl.getCategory(intention.value)
-    category match {
-      case Some(c)=>answer = s"Dare de alta un ticket de tipo: ${c.name}"
-      case None=>answer = "Aun no puedo procesar el problema que me presentas, solicitare capacitacion"
-    }
-  }
-
   def searchMainNode():Unit = {
+    logger.info("Searching main node")
     val ontologyContext = OntologyContextDao.findActiveContext(chatId);
     //here we have to search the node of graph where the magic starts
     ontologyContext match {
-      case Some(o)=>answer = s"Current context ${o.mainNode} - ${o.currentNode}"
+      case Some(o)=>
+        val ct = AsignoKnowledgeManagerImpl.getCategory(o.currentNode)
       case None=>
-        val category = AsignoKnowledgeManagerImpl.getCategory(intention.value)
-        category match {
+        val ct = AsignoKnowledgeManagerImpl.getCategory(intention.value)
+        ct match {
           case Some(c)=>
-            var nodes:List[NodeProperty] = List()
-            user.hasProperty.foreach(h=>nodes = nodes ::: AsignoKnowledgeManagerImpl.hasProperty(h.toString,c.value))
-            logger.info("{}",nodes)
-            if(nodes.isEmpty) {
-              logger.info("There are no main node in user Entity, searching in company")
-              nodes = AsignoKnowledgeManagerImpl.hasProperty(user.isInCompany.get.toString, c.value)
-              logger.info("{}",nodes)
-              nodes.foreach(n=>answer = answer.concat(s"\n ${n.name}"))
+            category = c
+            user.hasProperty.foreach(h=>mainNodes = mainNodes ::: AsignoKnowledgeManagerImpl.hasProperty(h.toString,c.value))
+            if(mainNodes.isEmpty) {
+              mainNodes = AsignoKnowledgeManagerImpl.hasProperty(user.isInCompany.get.toString, c.value)
             }
           case None=>logger.info("There are no category . bot is not trained to answer this")
         }
     }
   }
 
-  def setAnswer(answer:String): Unit ={
-    this.answer = answer
-  }
+  def concatAnswer(): Unit = mainNodes.foreach(s=>answer = answer.concat("\n").concat(s.name))
+  
+  def setAnswer(answer:String): Unit= this.answer = answer
+
 }
 /**
   * @author Victor de la Cruz
