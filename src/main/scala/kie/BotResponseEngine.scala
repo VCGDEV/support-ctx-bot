@@ -66,6 +66,9 @@ object BotResponseEngine {
     val response = new ConversationHistory(0,process.intention.intentType,process.answer,"luky",process.user.name,new Timestamp(new Date().getTime),
       process.chatId)
     ConversationHistoryDao.save(response)
+    if(process.category!=null)
+      process.answer = process.answer.replace("{element}",process.category.name)
+          .replace("{article}",process.category.article)
     process.answer
   }
 

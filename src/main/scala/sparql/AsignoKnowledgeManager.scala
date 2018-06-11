@@ -71,7 +71,7 @@ class AsignoKnowledgeManager[Rdf <: RDF](implicit
 
   //TODO move this classes to another files ---->
   case class Category(categoryId:Long,devCategoryId:Long,value:String,subcategoryId:Long,
-                      intent:String,name:String,devSubcategoryId:Long)
+                      intent:String,name:String,devSubcategoryId:Long,article:Option[String])
 
   object Category{
     val clazz = issuePrefix.Category
@@ -83,8 +83,9 @@ class AsignoKnowledgeManager[Rdf <: RDF](implicit
     val devCategoryId = property[Long](issuePrefix.devCategoryId)
     val categoryId = property[Long](issuePrefix.categoryId)
     val devSubcategoryId = property[Long](issuePrefix.devSubcategoryId)
+    val article = optional[String](issuePrefix.article)
     implicit val binder = pgb[Category](categoryId,devCategoryId,value,
-      subcategoryId,intent,name,devSubcategoryId)(Category.apply,Category.unapply)
+      subcategoryId,intent,name,devSubcategoryId,article)(Category.apply,Category.unapply)
   }
 
   case class Intent(intentType:String,value:String,hasAnswer:Set[Rdf#URI]){
@@ -196,7 +197,7 @@ class AsignoKnowledgeManager[Rdf <: RDF](implicit
       case Triple(category,rdf.`type`,issuePrefix.Category)=>
         val c = PointedGraph(category,resultGraph).as[Category].get
         IssueCategory(c.categoryId,c.devCategoryId,c.value,c.subcategoryId,
-          c.intent,c.name,c.devSubcategoryId)
+          c.intent,c.name,c.devSubcategoryId,c.article.getOrElse(""))
     }.headOption
   }
 

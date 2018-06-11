@@ -60,6 +60,7 @@ class IssuePrefix[Rdf <: RDF](ops: RDFOps[Rdf]) extends PrefixBuilder("iss","htt
   val name = apply("name")
   val subcategoryId = apply("subcategoryId")
   val value = apply("value")
+  val article = apply("article")
 }
 
 object IssueOntologyPrefix{

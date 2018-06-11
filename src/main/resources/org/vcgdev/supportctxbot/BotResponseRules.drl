@@ -8,27 +8,24 @@ import kie.CommentCreated;
 declare MainNode
   number:int
   end
-rule "The intention is a single ask"
+rule "User is asking with no context"
     when $a:ProcessIntention(intention().intentType()=="ask")
     then
         $a.findAnswer();
      end
-//from here the bot havre to navigate in the ontology to get responses
-rule "The intention is an entity"
+rule "User has an issue"
     when $a:ProcessIntention(intention().intentType()=="entity")
     then
-       $a.setAnswer("Por favor ingresa una breve descripcion del problema");
        $a.searchMainNode();
-       //detect nunmber of nodes
        MainNode main = new MainNode();
        main.setNumber($a.mainNodes().size());
        insert(main);
      end
-rule "Main nodes is empty"
+rule "There are no main nodes for issue"
     when $b:MainNode(number==0)
         $a:ProcessIntention(intention().intentType()=="entity")
     then
-      $a.setAnswer("No se encontro ninguna entidad");
+      $a.setAnswer("Se creara un nuevo Ticket para procesar {article} {element}");
      end
 rule "Main nodes has exactly one"
     when $a:ProcessIntention(intention().intentType()=="entity")
@@ -40,7 +37,7 @@ rule "There are more thna one"
     when $a:ProcessIntention(intention().intentType()=="entity")
      $b:MainNode(number>1)
     then
-      $a.setAnswer("Se detecto mas de un(a) "+$a.category().name());
+      $a.setAnswer("Me puedes decir con que {element} tienes el problema?");
       $a.concatAnswer();
      end
 rule "Intention was not detected"
