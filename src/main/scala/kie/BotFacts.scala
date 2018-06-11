@@ -27,10 +27,9 @@ case class ProcessIntention(user:User,intention:Intention,conversation:Conversat
   var answer:String = ""
   var mainNodes:List[NodeProperty] = List()
   var category:IssueCategory = null
-  def findAnswer() = {
-    val rdfURI = AsignoKnowledgeManagerImpl.getRandomElement(intention.hasAnswer)
-    answer = AsignoKnowledgeManagerImpl.getAnswer(rdfURI.toString).getOrElse(OntologyAnswer("")).value
-  }
+  def findAnswer() =
+    answer = AsignoKnowledgeManagerImpl.getAnswer(AsignoKnowledgeManagerImpl.getRandomElement(intention.hasAnswer).toString).getOrElse(OntologyAnswer("")).value
+
   def searchMainNode():Unit = {
     logger.info("Searching main node")
     val ontologyContext = OntologyContextDao.findActiveContext(chatId);
@@ -53,7 +52,7 @@ case class ProcessIntention(user:User,intention:Intention,conversation:Conversat
   }
 
   def concatAnswer(): Unit = mainNodes.foreach(s=>answer = answer.concat("\n").concat(s.name))
-  
+
   def setAnswer(answer:String): Unit= this.answer = answer
 
 }
